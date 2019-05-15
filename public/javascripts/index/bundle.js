@@ -5747,6 +5747,8 @@ module.exports = function(obj, fn){
 "use strict";
 
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _jquery = __webpack_require__(26);
 
 var _jquery2 = _interopRequireDefault(_jquery);
@@ -5797,8 +5799,11 @@ function init() {
 init();
 
 function ticker() {
+  if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
   // フィールドの画面を初期化する
   gameObj.ctxField.clearRect(0, 0, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+  // アイテムなどの要素を描画する
+  drawMap(gameObj);
   // プレイヤーを描画する
   drawPlayer(gameObj.ctxField);
 }
@@ -5810,6 +5815,10 @@ function drawPlayer(ctxField) {
 
   ctxField.drawImage(gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2));
   ctxField.restore();
+}
+
+function getRadian(kakudo) {
+  return kakudo * Math.PI / 180;
 }
 
 socket.on('start data', function (startObj) {
@@ -5877,11 +5886,158 @@ socket.on('map data', function (compressed) {
   gasArray.forEach(function (compressedAirData, index) {
     gameObj.gasMap.set(index, { x: compressedAirData[0], y: compressedAirData[1] });
   });
-
-  console.log(gameObj.playersMap);
-  console.log(gameObj.itemsMap);
-  console.log(gameObj.gasMap);
 });
+
+function drawMap(gameObj) {
+
+  // アイテムの描画
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = gameObj.itemsMap[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var _ref = _step2.value;
+
+      var _ref2 = _slicedToArray(_ref, 2);
+
+      var index = _ref2[0];
+      var item = _ref2[1];
+
+
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, item.x, item.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+
+      if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
+
+        gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.itemRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
+      }
+    }
+
+    // 空気の描画
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = gameObj.gasMap[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var _ref3 = _step3.value;
+
+      var _ref4 = _slicedToArray(_ref3, 2);
+
+      var gasKey = _ref4[0];
+      var gasObj = _ref4[1];
+
+
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, gasObj.x, gasObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+
+      if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
+
+        gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
+      }
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+}
+
+function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight, fieldCanvasWidth, fieldCanvasHeight) {
+  var distanceX = 99999999;
+  var distanceY = 99999999;
+  var drawX = null;
+  var drawY = null;
+
+  if (pX <= oX) {
+    // 右から
+    distanceX = oX - pX;
+    drawX = fieldCanvasWidth / 2 + distanceX;
+    // 左から
+    var tmpDistance = pX + gameWidth - oX;
+    if (distanceX > tmpDistance) {
+      distanceX = tmpDistance;
+      drawX = fieldCanvasWidth / 2 - distanceX;
+    }
+  } else {
+    // 右から
+    distanceX = pX - oX;
+    drawX = fieldCanvasWidth / 2 - distanceX;
+    // 左から
+    var _tmpDistance = oX + gameWidth - pX;
+    if (distanceX > _tmpDistance) {
+      distanceX = _tmpDistance;
+      drawX = fieldCanvasWidth / 2 + distanceX;
+    }
+  }
+
+  if (pY <= oY) {
+    // 下から
+    distanceY = oY - pY;
+    drawY = fieldCanvasHeight / 2 + distanceY;
+    // 上から
+    var _tmpDistance2 = pY + gameHeight - oY;
+    if (distanceY > _tmpDistance2) {
+      distanceY = _tmpDistance2;
+      drawY = fieldCanvasHeight / 2 - distanceY;
+    }
+  } else {
+    // 上から
+    distanceY = pY - oY;
+    drawY = fieldCanvasHeight / 2 - distanceY;
+    // 下から
+    var _tmpDistance3 = oY + gameHeight - pY;
+    if (distanceY > _tmpDistance3) {
+      distanceY = _tmpDistance3;
+      drawY = fieldCanvasHeight / 2 + distanceY;
+    }
+  }
+
+  var degree = calcTwoPointsDegree(drawX, drawY, fieldCanvasWidth / 2, fieldCanvasHeight / 2);
+
+  return {
+    distanceX: distanceX,
+    distanceY: distanceY,
+    drawX: drawX,
+    drawY: drawY,
+    degree: degree
+  };
+}
+
+function calcTwoPointsDegree(x1, y1, x2, y2) {
+  var radian = Math.atan2(y2 - y1, x2 - x1);
+  var degree = radian * 180 / Math.PI + 180;
+  return degree;
+}
 
 /***/ }),
 /* 26 */

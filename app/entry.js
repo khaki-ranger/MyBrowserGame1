@@ -42,8 +42,11 @@ function init() {
 init();
 
 function ticker() {
+  if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
   // フィールドの画面を初期化する
   gameObj.ctxField.clearRect(0, 0, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+  // アイテムなどの要素を描画する
+  drawMap(gameObj);
   // プレイヤーを描画する
   drawPlayer(gameObj.ctxField);
 }
@@ -57,6 +60,10 @@ function drawPlayer(ctxField) {
       gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2)
   );
   ctxField.restore();
+}
+
+function getRadian(kakudo) {
+  return kakudo * Math.PI / 180
 }
 
 socket.on('start data', (startObj) => {
@@ -105,3 +112,112 @@ socket.on('map data', (compressed) => {
   });
 });
 
+function drawMap(gameObj) {
+
+  // アイテムの描画
+  for (let [index, item] of gameObj.itemsMap) {
+
+    const distanceObj = calculationBetweenTwoPoints(
+      gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
+      item.x, item.y,
+      gameObj.fieldWidth, gameObj.fieldHeight,
+      gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
+    );
+
+    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+
+      gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.itemRadius, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+    }
+  }
+
+  // 空気の描画
+  for (const [gasKey, gasObj] of gameObj.gasMap) {
+
+    const distanceObj = calculationBetweenTwoPoints(
+      gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
+      gasObj.x, gasObj.y,
+      gameObj.fieldWidth, gameObj.fieldHeight,
+      gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
+    );
+
+    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+
+      gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+    }
+  }
+}
+
+function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight, fieldCanvasWidth, fieldCanvasHeight) {
+  let distanceX = 99999999;
+  let distanceY = 99999999;
+  let drawX = null;
+  let drawY = null;
+
+  if (pX <= oX) {
+    // 右から
+    distanceX = oX - pX;
+    drawX = (fieldCanvasWidth / 2) + distanceX;
+    // 左から
+    let tmpDistance = pX + gameWidth - oX;
+    if (distanceX > tmpDistance) {
+      distanceX = tmpDistance;
+      drawX = (fieldCanvasWidth / 2) - distanceX;
+    }
+
+  } else {
+    // 右から
+    distanceX = pX - oX;
+    drawX = (fieldCanvasWidth / 2) - distanceX;
+    // 左から
+    let tmpDistance = oX + gameWidth - pX;
+    if (distanceX > tmpDistance) {
+      distanceX = tmpDistance;
+      drawX = (fieldCanvasWidth / 2) + distanceX;
+    }
+  }
+
+  if (pY <= oY) {
+    // 下から
+    distanceY = oY - pY;
+    drawY = (fieldCanvasHeight / 2) + distanceY;
+    // 上から
+    let tmpDistance = pY + gameHeight - oY;
+    if (distanceY > tmpDistance) {
+      distanceY = tmpDistance;
+      drawY = (fieldCanvasHeight / 2) - distanceY;
+    }
+
+  } else {
+    // 上から
+    distanceY = pY - oY;
+    drawY = (fieldCanvasHeight / 2) - distanceY;
+    // 下から
+    let tmpDistance = oY + gameHeight - pY;
+    if (distanceY > tmpDistance) {
+      distanceY = tmpDistance;
+      drawY = (fieldCanvasHeight / 2) + distanceY;
+    }
+  }
+
+  const degree = calcTwoPointsDegree(drawX, drawY, fieldCanvasWidth / 2, fieldCanvasHeight / 2);
+
+  return {
+    distanceX,
+    distanceY,
+    drawX,
+    drawY,
+    degree
+  };
+}
+
+function calcTwoPointsDegree(x1, y1, x2, y2) {
+  const radian = Math.atan2(y2 - y1, x2 - x1);
+  const degree = radian * 180 / Math.PI + 180;
+  return degree;
+}

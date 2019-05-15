@@ -41,6 +41,10 @@ function init() {
   const playerImage = new Image();
   playerImage.src = gameObj.myThumbUrl;
   gameObj.playerImage = playerImage;
+
+  // 障害物の画像
+  gameObj.obstacleImage = new Image();
+  gameObj.obstacleImage.src = '/images/obstacle.png';
 }
 init();
 
@@ -120,7 +124,6 @@ socket.on('map data', (compressed) => {
     gameObj.obstacleMap.set(index, { x: compressedObstacleData[0], y: compressedObstacleData[1] });     
   });
 
-  console.log(gameObj.obstacleMap);
 });
 
 function drawMap(gameObj) {
@@ -144,7 +147,7 @@ function drawMap(gameObj) {
     }
   }
 
-  // 空気の描画
+  // ガスの描画
   for (const [gasKey, gasObj] of gameObj.gasMap) {
 
     const distanceObj = calculationBetweenTwoPoints(
@@ -160,6 +163,24 @@ function drawMap(gameObj) {
       gameObj.ctxField.beginPath();
       gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
       gameObj.ctxField.fill();
+    }
+  }
+
+  // 障害物の描画
+  for (const [obstacleKey, obstacleObj] of gameObj.obstacleMap) {
+
+    const distanceObj = calculationBetweenTwoPoints(
+      gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
+      obstacleObj.x, obstacleObj.y,
+      gameObj.fieldWidth, gameObj.fieldHeight,
+      gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
+    );
+
+    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+
+      gameObj.ctxField.drawImage(
+        gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY
+      );
     }
   }
 }

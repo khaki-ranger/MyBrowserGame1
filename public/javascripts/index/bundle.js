@@ -5798,6 +5798,10 @@ function init() {
   var playerImage = new Image();
   playerImage.src = gameObj.myThumbUrl;
   gameObj.playerImage = playerImage;
+
+  // 障害物の画像
+  gameObj.obstacleImage = new Image();
+  gameObj.obstacleImage.src = '/images/obstacle.png';
 }
 init();
 
@@ -5895,8 +5899,6 @@ socket.on('map data', function (compressed) {
   obstacleArray.forEach(function (compressedObstacleData, index) {
     gameObj.obstacleMap.set(index, { x: compressedObstacleData[0], y: compressedObstacleData[1] });
   });
-
-  console.log(gameObj.obstacleMap);
 });
 
 function drawMap(gameObj) {
@@ -5927,7 +5929,7 @@ function drawMap(gameObj) {
       }
     }
 
-    // 空気の描画
+    // ガスの描画
   } catch (err) {
     _didIteratorError2 = true;
     _iteratorError2 = err;
@@ -5967,6 +5969,8 @@ function drawMap(gameObj) {
         gameObj.ctxField.fill();
       }
     }
+
+    // 障害物の描画
   } catch (err) {
     _didIteratorError3 = true;
     _iteratorError3 = err;
@@ -5978,6 +5982,42 @@ function drawMap(gameObj) {
     } finally {
       if (_didIteratorError3) {
         throw _iteratorError3;
+      }
+    }
+  }
+
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
+
+  try {
+    for (var _iterator4 = gameObj.obstacleMap[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var _ref5 = _step4.value;
+
+      var _ref6 = _slicedToArray(_ref5, 2);
+
+      var obstacleKey = _ref6[0];
+      var obstacleObj = _ref6[1];
+
+
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+
+      if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
+
+        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
+      }
+    }
+  } catch (err) {
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion4 && _iterator4.return) {
+        _iterator4.return();
+      }
+    } finally {
+      if (_didIteratorError4) {
+        throw _iteratorError4;
       }
     }
   }

@@ -13,7 +13,7 @@ const TWITTER_SECRET = process.env.TWITTER_SECRET;
 const TWITTER_CALLBACK_URL = process.env.TWITTER_CALLBACK_URL;
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var gameRouter = require('./routes/game');
 
 passport.use(new Strategy({
     consumerKey: TWITTER_CONSUMER_KEY ,
@@ -53,7 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/game', gameRouter);
 
 app.get('/login/twitter',
   passport.authenticate('twitter')

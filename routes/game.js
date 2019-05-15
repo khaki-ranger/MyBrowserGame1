@@ -7,7 +7,7 @@ const IP_ADDRESS = process.env.IP_ADDRESS;
 router.get('/', (req, res, next) => {
   const userInfo = {
     displayName: 'anonymous',
-    thumbUrl: null
+    thumbUrl: 'images/anonymous.jpg'
   };
   if (req.user) {
      userInfo.displayName = req.user.displayName;

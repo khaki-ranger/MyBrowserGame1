@@ -5762,9 +5762,15 @@ var gameObj = {
   fieldCanvasHeight: 500,
   scoreCanvasWidth: 300,
   scoreCanvasHeight: 500,
+  itemRadius: 4,
+  gasRadius: 6,
   deg: 0,
   myDisplayName: (0, _jquery2.default)('#main').attr('data-displayName'),
-  myThumbUrl: (0, _jquery2.default)('#main').attr('data-thumbUrl')
+  myThumbUrl: (0, _jquery2.default)('#main').attr('data-thumbUrl'),
+  fieldWidth: null,
+  fieldHeight: null,
+  itemsMap: new Map(),
+  gasMap: new Map()
 };
 
 var socketQueryParameters = 'displayName=' + gameObj.myDisplayName + '&thumbUrl=' + gameObj.myThumbUrl;
@@ -5807,11 +5813,74 @@ function drawPlayer(ctxField) {
 }
 
 socket.on('start data', function (startObj) {
-  console.log('start data came');
+  gameObj.fieldWidth = startObj.fieldWidth;
+  gameObj.fieldHeight = startObj.fieldHeight;
+  gameObj.myPlayerObj = startObj.playerObj;
 });
 
 socket.on('map data', function (compressed) {
-  console.log('map data came');
+  var playersArray = compressed[0];
+  var itemsArray = compressed[1];
+  var gasArray = compressed[2];
+
+  gameObj.playersMap = new Map();
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = playersArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var compressedPlayerData = _step.value;
+
+
+      var player = {};
+      player.x = compressedPlayerData[0];
+      player.y = compressedPlayerData[1];
+      player.playerId = compressedPlayerData[2];
+      player.displayName = compressedPlayerData[3];
+      player.score = compressedPlayerData[4];
+      player.isAlive = compressedPlayerData[5];
+      player.direction = compressedPlayerData[6];
+
+      gameObj.playersMap.set(player.playerId, player);
+
+      // 自分の情報も更新
+      if (player.playerId === gameObj.myPlayerObj.playerId) {
+        gameObj.myPlayerObj.x = compressedPlayerData[0];
+        gameObj.myPlayerObj.y = compressedPlayerData[1];
+        gameObj.myPlayerObj.displayName = compressedPlayerData[3];
+        gameObj.myPlayerObj.score = compressedPlayerData[4];
+        gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  gameObj.itemsMap = new Map();
+  itemsArray.forEach(function (compressedItemData, index) {
+    gameObj.itemsMap.set(index, { x: compressedItemData[0], y: compressedItemData[1] });
+  });
+
+  gameObj.gasMap = new Map();
+  gasArray.forEach(function (compressedAirData, index) {
+    gameObj.gasMap.set(index, { x: compressedAirData[0], y: compressedAirData[1] });
+  });
+
+  console.log(gameObj.playersMap);
+  console.log(gameObj.itemsMap);
+  console.log(gameObj.gasMap);
 });
 
 /***/ }),

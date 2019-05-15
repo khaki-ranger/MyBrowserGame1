@@ -1,5 +1,6 @@
 'use strict';
 import $ from 'jquery';
+import io from 'socket.io-client';
 
 const gameObj = {
   fieldCanvasWidth: 500,
@@ -10,6 +11,9 @@ const gameObj = {
   myDisplayName: $('#main').attr('data-displayName'),
   myThumbUrl: $('#main').attr('data-thumbUrl')
 };
+
+const socketQueryParameters = `displayName=${gameObj.myDisplayName}&thumbUrl=${gameObj.myThumbUrl}`;
+const socket = io($('#main').attr('data-ipAddress') + '?' + socketQueryParameters);
 
 function init() {
   // ゲーム用のキャンバス
@@ -48,3 +52,12 @@ function drawPlayer(ctxField) {
   );
   ctxField.restore();
 }
+
+socket.on('start data', (startObj) => {
+  console.log('start data came');
+});
+
+socket.on('map data', (compressed) => {
+  console.log('map data came');
+});
+

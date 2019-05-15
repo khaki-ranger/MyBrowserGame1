@@ -5766,13 +5766,16 @@ var gameObj = {
   scoreCanvasHeight: 500,
   itemRadius: 4,
   gasRadius: 6,
+  obstacleImageWidth: 40,
+  obstacleImageHeight: 43,
   deg: 0,
   myDisplayName: (0, _jquery2.default)('#main').attr('data-displayName'),
   myThumbUrl: (0, _jquery2.default)('#main').attr('data-thumbUrl'),
   fieldWidth: null,
   fieldHeight: null,
   itemsMap: new Map(),
-  gasMap: new Map()
+  gasMap: new Map(),
+  obstacleMap: new Map()
 };
 
 var socketQueryParameters = 'displayName=' + gameObj.myDisplayName + '&thumbUrl=' + gameObj.myThumbUrl;
@@ -5831,6 +5834,7 @@ socket.on('map data', function (compressed) {
   var playersArray = compressed[0];
   var itemsArray = compressed[1];
   var gasArray = compressed[2];
+  var obstacleArray = compressed[3];
 
   gameObj.playersMap = new Map();
   var _iteratorNormalCompletion = true;
@@ -5886,6 +5890,13 @@ socket.on('map data', function (compressed) {
   gasArray.forEach(function (compressedAirData, index) {
     gameObj.gasMap.set(index, { x: compressedAirData[0], y: compressedAirData[1] });
   });
+
+  gameObj.obstacleMap = new Map();
+  obstacleArray.forEach(function (compressedObstacleData, index) {
+    gameObj.obstacleMap.set(index, { x: compressedObstacleData[0], y: compressedObstacleData[1] });
+  });
+
+  console.log(gameObj.obstacleMap);
 });
 
 function drawMap(gameObj) {

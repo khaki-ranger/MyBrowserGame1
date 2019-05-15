@@ -9,13 +9,16 @@ const gameObj = {
   scoreCanvasHeight: 500,
   itemRadius: 4,
   gasRadius: 6,
+  obstacleImageWidth: 40,
+  obstacleImageHeight: 43,
   deg: 0,
   myDisplayName: $('#main').attr('data-displayName'),
   myThumbUrl: $('#main').attr('data-thumbUrl'),
   fieldWidth: null,
   fieldHeight: null,
   itemsMap: new Map(),
-  gasMap: new Map()
+  gasMap: new Map(),
+  obstacleMap: new Map()
 };
 
 const socketQueryParameters = `displayName=${gameObj.myDisplayName}&thumbUrl=${gameObj.myThumbUrl}`;
@@ -76,6 +79,7 @@ socket.on('map data', (compressed) => {
   const playersArray = compressed[0];
   const itemsArray = compressed[1];
   const gasArray = compressed[2];
+  const obstacleArray = compressed[3];
 
   gameObj.playersMap = new Map();
   for (let compressedPlayerData of playersArray) {
@@ -110,6 +114,13 @@ socket.on('map data', (compressed) => {
   gasArray.forEach((compressedAirData, index) => {
     gameObj.gasMap.set(index, { x: compressedAirData[0], y: compressedAirData[1] });     
   });
+
+  gameObj.obstacleMap = new Map();
+  obstacleArray.forEach((compressedObstacleData, index) => {
+    gameObj.obstacleMap.set(index, { x: compressedObstacleData[0], y: compressedObstacleData[1] });     
+  });
+
+  console.log(gameObj.obstacleMap);
 });
 
 function drawMap(gameObj) {

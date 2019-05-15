@@ -5,10 +5,12 @@ const gameObj = {
   playersMap: new Map(),
   itemsMap: new Map(),
   gasMap: new Map(),
+  obstacleMap: new Map(),
   fieldWidth: 1000,
   fieldHeight: 1000,
   itemTotal: 15,
-  gasTotal: 10
+  gasTotal: 10,
+  obstacleTotal: 30
 };
 
 function init() {
@@ -17,6 +19,9 @@ function init() {
   }
   for (let a = 0; a < gameObj.gasTotal; a++) {
     addGas();
+  }
+  for (let o = 0; o < gameObj.obstacleTotal; o++) {
+    addObstacle();
   }
 }
 init(); // 初期化（初期化はサーバー起動時に行う
@@ -50,6 +55,7 @@ function getMapData() {
   const playersArray = [];
   const itemsArray = [];
   const gasArray = [];
+  const obstacleArray = [];
     
   for (let [socketId, plyer] of gameObj.playersMap) {
     const playerDataForSend = [];
@@ -83,7 +89,16 @@ function getMapData() {
     gasArray.push(gasDataForSend);
   }
     
-  return [playersArray, itemsArray, gasArray];
+  for (let [id, obstacle] of gameObj.obstacleMap) {
+    const obstacleDataForSend = [];
+
+    obstacleDataForSend.push(obstacle.x);
+    obstacleDataForSend.push(obstacle.y);
+
+    obstacleArray.push(obstacleDataForSend);
+  }
+    
+  return [playersArray, itemsArray, gasArray, obstacleArray];
 }
 
 function disconnect(socketId) {
@@ -120,6 +135,22 @@ function addGas() {
     y: gasY,
   };
   gameObj.gasMap.set(gasKey, gasObj);
+}
+
+function addObstacle() {
+  const obstacleX = Math.floor(Math.random() * gameObj.fieldWidth);
+  const obstacleY = Math.floor(Math.random() * gameObj.fieldHeight);
+  const obstacleKey = `${obstacleX},${obstacleY}`;
+
+  if (gameObj.obstacleMap.has(obstacleKey)) { // アイテムの位置が被ってしまった場合は
+    return addObstacle(); // 場所が重複した場合は作り直し
+  }
+
+  const obstacleObj = {
+    x: obstacleX,
+    y: obstacleY,
+  };
+  gameObj.obstacleMap.set(obstacleKey, obstacleObj);
 }
 
 module.exports = {

@@ -10,4 +10,6 @@ block content
   section.information
     .container
       h1 #{displayName} でゲームに参加中！
+      .ui-block
+        a.ui-component(href="/") このゲームから抜ける
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

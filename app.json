@@ -1,0 +1,7 @@
+{
+  "name": "browser-game-1",
+  "description": "ゲームつくるセンター葉山のでつくるゲームの見本",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}

@@ -1,18 +1,32 @@
-yout
+extends layout
                                 
 block content
-  h1 オンライン潜水艦ゲーム
-  if user
-    h4 以下のアカウントでゲームに参加できます。
-    h2 #{user.displayName}　
-      img(src=`${user.photos[0].value}`)
-    h2
-      a(href='game') #{user.displayName} でゲームに参加
-    h3
-      a(href='logout') ログアウト
-  else
-    h3 記録を残すには twitter でログインしてください。
-    h3
-      a(href='login/twitter') Twitter でログイン
-    h3
-      a(href='game') 匿名でゲームに参加
+  section.key-visual
+    h1 すごいキービジュアルと
+      br
+      |すごいゲームタイトル
+    .control-panel
+      if user
+        .start
+          h2 スタート
+          .ui-block
+            a.ui-component.btn-start(href='game')
+              img(src=`${user.photos[0].value}`)
+              | #{user.displayName} でゲームに参加！
+          h2.middle-head-component
+            span OR
+          .ui-block
+            a.ui-component.logout(href='logout') ログアウト
+      else
+        .login
+          h2 ログイン
+          .ui-block
+            a.ui-component.twitter-login(href='login/twitter') Twitterでログイン
+          h2.middle-head-component
+            span OR
+          .ui-block
+            a.ui-component.btn-start(href='game') 匿名でゲームに参加！
+  section.description
+    .container
+      h1 ゲームつくるセンター葉山とは
+      .body 日本国民は、正当に選挙された国会における代表者を通じて行動し、われらとわれらの子孫のために、諸国民との協和による成果と、わが国全土にわたつて自由のもたらす恵沢を確保し、政府の行為によつて再び戦争の惨禍が起ることのないやうにすることを決意し、ここに主権が国民に存することを宣言し、この憲法を確定する。そもそも国政は、国民の厳粛な信託によるものであつて、その権威は国民に由来し、その権力は国民の代表者がこれを行使し、その福利は国民がこれを享受する。

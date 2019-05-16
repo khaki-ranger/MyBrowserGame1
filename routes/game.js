@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
      userInfo.thumbUrl = req.user.photos[0].value;
   }
   res.render('game', {
-    title: 'オンライン対戦シューティングゲーム',
+    title: 'オンライン対戦シューティングゲーム | ゲームつくるセンター葉山',
     displayName: userInfo.displayName,
     thumbUrl: userInfo.thumbUrl,
     ipAddress: IP_ADDRESS

@@ -2,27 +2,28 @@ extends layout
                                 
 block content
   section.key-visual
-    h1 すごいキービジュアルと
-      br
-      |すごいゲームタイトル
+    .title-box
+      p ここの背景に、いい感じのキービジュアルが入る
+      h1 #{title}
     .control-panel
+      h2 サンプルゲーム開発中！
       if user
         .start
-          h2 スタート
+          h3 スタート
           .ui-block
             a.ui-component.btn-start(href='game')
               img(src=`${user.photos[0].value}`)
               | #{user.displayName} でゲームに参加！
-          h2.middle-head-component
+          .middle-head-component
             span OR
           .ui-block
             a.ui-component.logout(href='logout') ログアウト
       else
         .login
-          h2 ログイン
+          h3 ログイン
           .ui-block
             a.ui-component.twitter-login(href='login/twitter') Twitterでログイン
-          h2.middle-head-component
+          .middle-head-component
             span OR
           .ui-block
             a.ui-component.btn-start(href='game') 匿名でゲームに参加！

@@ -106,25 +106,31 @@ button.ui-component {
   background-color: #666;
   margin-bottom: 2rem;
 }
+.key-visual .title-box {
+  color: white;
+}
 .key-visual h1 {
   font-size: 2rem;
-  color: white;
 }
 /* control-panel */
 .control-panel {
   background-color: white;
 }
 .control-panel>div {
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
   text-align: center;
 }
 .control-panel h2 {
+  padding-top: 1rem;
+  text-align: center;
+}
+.control-panel h3 {
   margin-bottom: 1rem;
 }
 @media (max-width: 768px) {
 .key-visual {
 }
-.key-visual h1 {
+.key-visual .title-box {
   text-align: center;
   padding: 6rem 0;
 }
@@ -139,7 +145,7 @@ button.ui-component {
   width: 100%;
   height: 500px;
 }
-.key-visual h1 {
+.key-visual .title-box {
   display: table-cell;
   vertical-align: middle;
   text-align: left;
@@ -205,11 +211,12 @@ button.ui-component {
   align-items: center;
   line-height: 1;
   margin-bottom: 1.5rem;
-  font-size: 1rem;
 }
 .middle-head-component span {
   padding: .5rem;
   background-color: white;
+  font-size: 1rem;
+  font-weight: bold;
 }
 .middle-head-component:before, .middle-head-component:after {
   content: "";

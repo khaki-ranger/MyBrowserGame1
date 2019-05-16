@@ -7,6 +7,7 @@ var helmet = require('helmet');
 var session = require('express-session');
 var passport = require('passport');
 var Strategy = require('passport-twitter').Strategy;
+var auth = require('./auth');
 require('dotenv').config();
 const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY;
 const TWITTER_SECRET = process.env.TWITTER_SECRET;
@@ -37,6 +38,7 @@ passport.deserializeUser(function(obj, cb) {
 
 var app = express();
 app.use(helmet());
+app.use(auth);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

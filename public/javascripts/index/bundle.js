@@ -5769,6 +5769,12 @@ var gameObj = {
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
   deg: 0,
+  rotationDegreeByDirection: {
+    'left': 0,
+    'up': 270,
+    'down': 90,
+    'right': 0
+  },
   myDisplayName: (0, _jquery2.default)('#main').attr('data-displayName'),
   myThumbUrl: (0, _jquery2.default)('#main').attr('data-thumbUrl'),
   fieldWidth: null,
@@ -5812,13 +5818,20 @@ function ticker() {
   // アイテムなどの要素を描画する
   drawMap(gameObj);
   // プレイヤーを描画する
-  drawPlayer(gameObj.ctxField);
+  drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
 }
 setInterval(ticker, 33);
 
-function drawPlayer(ctxField) {
+function drawPlayer(ctxField, myPlayerObj) {
+
+  var rotationDegree = gameObj.rotationDegreeByDirection[myPlayerObj.direction];
+
   ctxField.save();
   ctxField.translate(gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2);
+  ctxField.rotate(getRadian(rotationDegree));
+  if (myPlayerObj.direction === 'right') {
+    ctxField.scale(-1, 1);
+  }
 
   ctxField.drawImage(gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2));
   ctxField.restore();
@@ -6088,6 +6101,45 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
   var radian = Math.atan2(y2 - y1, x2 - x1);
   var degree = radian * 180 / Math.PI + 180;
   return degree;
+}
+
+(0, _jquery2.default)(window).keydown(function (event) {
+  if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
+
+  switch (event.key) {
+    case 'ArrowLeft':
+      if (gameObj.myPlayerObj.direction !== 'left') {
+        gameObj.myPlayerObj.direction = 'left';
+        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+      }
+      sendChangeDirection(socket, 'left');
+      break;
+    case 'ArrowUp':
+      if (gameObj.myPlayerObj.direction !== 'up') {
+        gameObj.myPlayerObj.direction = 'up';
+        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+      }
+      sendChangeDirection(socket, 'up');
+      break;
+    case 'ArrowDown':
+      if (gameObj.myPlayerObj.direction !== 'down') {
+        gameObj.myPlayerObj.direction = 'down';
+        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+      }
+      sendChangeDirection(socket, 'down');
+      break;
+    case 'ArrowRight':
+      if (gameObj.myPlayerObj.direction !== 'right') {
+        gameObj.myPlayerObj.direction = 'right';
+        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+      }
+      sendChangeDirection(socket, 'right');
+      break;
+  }
+});
+
+function sendChangeDirection(socket, direction) {
+  socket.emit('change direction', direction);
 }
 
 /***/ }),

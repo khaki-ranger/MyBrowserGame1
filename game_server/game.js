@@ -10,7 +10,8 @@ const gameObj = {
   fieldHeight: 1000,
   itemTotal: 15,
   gasTotal: 10,
-  obstacleTotal: 30
+  obstacleTotal: 30,
+  distance: 10
 };
 
 function init() {
@@ -26,6 +27,37 @@ function init() {
 }
 init(); // 初期化（初期化はサーバー起動時に行う
 
+const gameTicker = setInterval(() => {
+}, 33);
+
+function movePlayers(playersMap) {
+  for (let [playerId, player] of playersMap) {
+
+    if (player.isAlive === false) {
+      continue;
+    }
+
+    switch (player.direction) {
+      case 'left':
+        player.x -= gameObj.distance;
+        break;
+      case 'up':
+        player.y -= gameObj.distance;
+        break;
+      case 'down':
+        player.y += gameObj.distance;
+        break;
+      case 'right':
+        player.x += gameObj.distance;
+        break;
+    }
+    if (player.x > gameObj.fieldWidth) player.x -= gameObj.fieldWidth;
+    if (player.x < 0) player.x += gameObj.fieldWidth;
+    if (player.y < 0) player.y += gameObj.fieldHeight;
+    if (player.y > gameObj.fieldHeight) player.y -= gameObj.fieldHeight;
+  }
+}
+
 function newConnection(socketId, displayName, thumbUrl) {
   const playerX = Math.floor(Math.random() * gameObj.fieldWidth);
   const playerY = Math.floor(Math.random() * gameObj.fieldHeight);
@@ -38,7 +70,7 @@ function newConnection(socketId, displayName, thumbUrl) {
     displayName: displayName,
     thumbUrl: thumbUrl,
     isAlive: true,
-    direction: 'right',
+    direction: 'left',
     score: 0
   };
   gameObj.playersMap.set(socketId, playerObj);
@@ -101,6 +133,12 @@ function getMapData() {
   return [playersArray, itemsArray, gasArray, obstacleArray];
 }
 
+function updatePlayerDirection(socketId, direction) {
+  const playerObj = gameObj.playersMap.get(socketId);
+  playerObj.direction = direction;
+  movePlayers(gameObj.playersMap);
+}
+
 function disconnect(socketId) {
   gameObj.playersMap.delete(socketId);
 }
@@ -156,5 +194,6 @@ function addObstacle() {
 module.exports = {
   newConnection,
   getMapData,
+  updatePlayerDirection,
   disconnect
 };

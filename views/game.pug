@@ -1,7 +1,13 @@
 extends layout
                                 
 block content
-  canvas#field
-  canvas#score
-  h3 #{displayName}
+  section.game
+    .controller.left
+    .main
+      canvas#field
+      canvas#score
+    .controller.right
+  section.information
+    .container
+      h1 #{displayName} でゲームに参加中！
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

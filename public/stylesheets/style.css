@@ -226,3 +226,19 @@ button.ui-component {
 .description .body {
   margin-bottom: 1rem;
 }
+/* game */
+.game {
+  display: table;
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: #eee;
+}
+.game>div {
+  display: table-cell;
+}
+.game .main {
+  width: 800px;
+}
+.information h1 {
+  text-align: center;
+}

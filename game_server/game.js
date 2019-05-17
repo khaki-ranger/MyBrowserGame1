@@ -5,12 +5,15 @@ const gameObj = {
   playersMap: new Map(),
   itemsMap: new Map(),
   gasMap: new Map(),
+  COMMap: new Map(),
+  addingCOMPlayerNum: 9,
   obstacleMap: new Map(),
   flyingMissilesMap: new Map(),
   missileAliveFlame: 180,
   missileSpeed: 3,
   missileWidth: 30,
   missileHeight: 30,
+  directions: ['left', 'up', 'down', 'right'],
   fieldWidth: 1000,
   fieldHeight: 1000,
   itemTotal: 15,
@@ -38,9 +41,33 @@ function init() {
 init(); // 初期化（初期化はサーバー起動時に行う
 
 const gameTicker = setInterval(() => {
+  COMMoveDecision(gameObj.COMMap); // COM の行動選択
+  const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
   moveMissile(gameObj.flyingMissilesMap);
-  checkGetItem(gameObj.playersMap, gameObj.itemsMap, gameObj.gasMap, gameObj.flyingMissilesMap); // アイテムの取得チェック
+  checkGetItem(playersAndCOMMap, gameObj.itemsMap, gameObj.gasMap, gameObj.flyingMissilesMap); // アイテムの取得チェック
+  addCOM();
 }, 33);
+
+function COMMoveDecision(COMMap) {
+  for (let [COMId, COMObj] of COMMap) {
+
+    switch (COMObj.level) {
+      case 1:
+        if (Math.floor(Math.random() * 10) === 1) {
+          movePlayer(COMObj);
+        }
+        if (Math.floor(Math.random() * 60) === 1) {
+          COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
+        }
+        if (COMObj.missilesMany > 0 && Math.floor(Math.random() * 90) === 1) {
+          missileEmit(COMObj.playerId, COMObj.direction);
+        }
+        break;
+      case 2:
+      case 3:
+    }
+  }
+}
 
 function movePlayer(player) {
   if (player.isAlive === false) return;
@@ -73,6 +100,7 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
         playerObj.deadCount += 1;
       } else {
         gameObj.playersMap.delete(hashKey);
+        gameObj.COMMap.delete(hashKey);
       }
       continue;
     }
@@ -219,8 +247,9 @@ function getMapData() {
   const gasArray = [];
   const flyingMissilesArray = [];
   const obstacleArray = [];
+  const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
     
-  for (let [socketId, plyer] of gameObj.playersMap) {
+  for (let [socketId, plyer] of playersAndCOMMap) {
     const playerDataForSend = [];
 
     playerDataForSend.push(plyer.x);
@@ -285,9 +314,10 @@ function updatePlayerDirection(socketId, direction) {
 }
 
 function missileEmit(socketId, direction) {
-  if (!gameObj.playersMap.has(socketId)) return;
+  const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
+  if (!playersAndCOMMap.has(socketId)) return;
 
-  let emitPlayerObj = gameObj.playersMap.get(socketId);
+  let emitPlayerObj = playersAndCOMMap.get(socketId);
 
   if (emitPlayerObj.missilesMany <= 0) return; // 撃てないやん
   if (emitPlayerObj.isAlive === false) return; // 死んでるやんけ
@@ -357,6 +387,36 @@ function addObstacle() {
     y: obstacleY,
   };
   gameObj.obstacleMap.set(obstacleKey, obstacleObj);
+}
+
+function addCOM() {
+  if (gameObj.playersMap.size + gameObj.COMMap.size < gameObj.addingCOMPlayerNum) {
+    const addMany = gameObj.addingCOMPlayerNum - gameObj.playersMap.size - gameObj.COMMap.size;
+
+    for (let i = 0; i < addMany; i++) {
+
+      const playerX = Math.floor(Math.random() * gameObj.fieldWidth);
+      const playerY = Math.floor(Math.random() * gameObj.fieldHeight);
+      const level = Math.floor(Math.random() * 1) + 1;
+      const id = Math.floor(Math.random() * 100000) + ',' + playerX + ',' + playerY + ',' + level;
+      const playerObj = {
+        x: playerX,
+        y: playerY,
+        isAlive: true,
+        deadCount: 0,
+        direction: 'right',
+        missilesMany: 0,
+        airTime: 99,
+        aliveTime: { 'clock': 0, 'seconds': 0 },
+        score: 0,
+        level: level,
+        displayName: 'COM',
+        thumbUrl: 'COM',
+        playerId: id
+      };
+      gameObj.COMMap.set(id, playerObj);
+    }
+  }
 }
 
 function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {

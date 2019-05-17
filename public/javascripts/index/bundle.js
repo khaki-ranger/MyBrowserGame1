@@ -5766,7 +5766,6 @@ var gameObj = {
   scoreCanvasHeight: 500,
   movingDistance: 10,
   itemRadius: 4,
-  gasRadius: 6,
   bomCellPx: 32,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
@@ -5788,7 +5787,6 @@ var gameObj = {
   fieldWidth: null,
   fieldHeight: null,
   itemsMap: new Map(),
-  gasMap: new Map(),
   obstacleMap: new Map(),
   flyingMissilesMap: new Map()
 };
@@ -5844,7 +5842,6 @@ function ticker() {
 
   // スコアの画面を初期化する
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
-  drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
   drawScore(gameObj.ctxScore, gameObj.myPlayerObj.score);
   drawRanking(gameObj.ctxScore, gameObj.playersMap);
@@ -5900,12 +5897,6 @@ function drawMissiles(ctxScore, missilesMany) {
   }
 }
 
-function drawGasTimer(ctxScore, gasTime) {
-  ctxScore.fillStyle = 'rgb(0, 220, 250)';
-  ctxScore.font = 'bold 40px Arial';
-  ctxScore.fillText(gasTime, 110, 50);
-}
-
 function getRadian(kakudo) {
   return kakudo * Math.PI / 180;
 }
@@ -5946,9 +5937,8 @@ socket.on('start data', function (startObj) {
 socket.on('map data', function (compressed) {
   var playersArray = compressed[0];
   var itemsArray = compressed[1];
-  var gasArray = compressed[2];
-  var obstacleArray = compressed[3];
-  var flyingMissilesArray = compressed[4];
+  var obstacleArray = compressed[2];
+  var flyingMissilesArray = compressed[3];
 
   gameObj.playersMap = new Map();
   var _iteratorNormalCompletion = true;
@@ -5969,8 +5959,7 @@ socket.on('map data', function (compressed) {
       player.isAlive = compressedPlayerData[5];
       player.direction = compressedPlayerData[6];
       player.missilesMany = compressedPlayerData[7];
-      player.gasTime = compressedPlayerData[8];
-      player.deadCount = compressedPlayerData[9];
+      player.deadCount = compressedPlayerData[8];
 
       gameObj.playersMap.set(player.playerId, player);
 
@@ -5982,8 +5971,7 @@ socket.on('map data', function (compressed) {
         gameObj.myPlayerObj.score = compressedPlayerData[4];
         gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
         gameObj.myPlayerObj.missilesMany = compressedPlayerData[7];
-        gameObj.myPlayerObj.gasTime = compressedPlayerData[8];
-        gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
+        gameObj.myPlayerObj.deadCount = compressedPlayerData[8];
       }
     }
   } catch (err) {
@@ -6004,11 +5992,6 @@ socket.on('map data', function (compressed) {
   gameObj.itemsMap = new Map();
   itemsArray.forEach(function (compressedItemData, index) {
     gameObj.itemsMap.set(index, { x: compressedItemData[0], y: compressedItemData[1] });
-  });
-
-  gameObj.gasMap = new Map();
-  gasArray.forEach(function (compressedGasData, index) {
-    gameObj.gasMap.set(index, { x: compressedGasData[0], y: compressedGasData[1] });
   });
 
   gameObj.obstacleMap = new Map();
@@ -6150,7 +6133,7 @@ function drawMap(gameObj) {
       }
     }
 
-    // ガスの描画
+    // 障害物の描画
   } catch (err) {
     _didIteratorError3 = true;
     _iteratorError3 = err;
@@ -6171,27 +6154,24 @@ function drawMap(gameObj) {
   var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator4 = gameObj.gasMap[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+    for (var _iterator4 = gameObj.obstacleMap[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
       var _ref5 = _step4.value;
 
       var _ref6 = _slicedToArray(_ref5, 2);
 
-      var gasKey = _ref6[0];
-      var gasObj = _ref6[1];
+      var obstacleKey = _ref6[0];
+      var obstacleObj = _ref6[1];
 
 
-      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, gasObj.x, gasObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
       if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
-        gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
+        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
       }
     }
 
-    // 障害物の描画
+    // 飛んでいるミサイルの描画
   } catch (err) {
     _didIteratorError4 = true;
     _iteratorError4 = err;
@@ -6212,51 +6192,13 @@ function drawMap(gameObj) {
   var _iteratorError5 = undefined;
 
   try {
-    for (var _iterator5 = gameObj.obstacleMap[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+    for (var _iterator5 = gameObj.flyingMissilesMap[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
       var _ref7 = _step5.value;
 
       var _ref8 = _slicedToArray(_ref7, 2);
 
-      var obstacleKey = _ref8[0];
-      var obstacleObj = _ref8[1];
-
-
-      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
-
-      if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
-
-        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
-      }
-    }
-
-    // 飛んでいるミサイルの描画
-  } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion5 && _iterator5.return) {
-        _iterator5.return();
-      }
-    } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
-      }
-    }
-  }
-
-  var _iteratorNormalCompletion6 = true;
-  var _didIteratorError6 = false;
-  var _iteratorError6 = undefined;
-
-  try {
-    for (var _iterator6 = gameObj.flyingMissilesMap[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-      var _ref9 = _step6.value;
-
-      var _ref10 = _slicedToArray(_ref9, 2);
-
-      var missileId = _ref10[0];
-      var flyingMissile = _ref10[1];
+      var missileId = _ref8[0];
+      var flyingMissile = _ref8[1];
 
 
       var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, flyingMissile.x, flyingMissile.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
@@ -6337,16 +6279,16 @@ function drawMap(gameObj) {
       }
     }
   } catch (err) {
-    _didIteratorError6 = true;
-    _iteratorError6 = err;
+    _didIteratorError5 = true;
+    _iteratorError5 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion6 && _iterator6.return) {
-        _iterator6.return();
+      if (!_iteratorNormalCompletion5 && _iterator5.return) {
+        _iterator5.return();
       }
     } finally {
-      if (_didIteratorError6) {
-        throw _iteratorError6;
+      if (_didIteratorError5) {
+        throw _iteratorError5;
       }
     }
   }
@@ -6514,18 +6456,18 @@ function moveFlyingMissileInClient(myPlayerObj, flyingMissilesMap) {
   }
 
   // 飛んでいるミサイルの移動
-  var _iteratorNormalCompletion7 = true;
-  var _didIteratorError7 = false;
-  var _iteratorError7 = undefined;
+  var _iteratorNormalCompletion6 = true;
+  var _didIteratorError6 = false;
+  var _iteratorError6 = undefined;
 
   try {
-    for (var _iterator7 = flyingMissilesMap[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-      var _ref11 = _step7.value;
+    for (var _iterator6 = flyingMissilesMap[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+      var _ref9 = _step6.value;
 
-      var _ref12 = _slicedToArray(_ref11, 2);
+      var _ref10 = _slicedToArray(_ref9, 2);
 
-      var missileId = _ref12[0];
-      var flyingMissile = _ref12[1];
+      var missileId = _ref10[0];
+      var flyingMissile = _ref10[1];
 
 
       switch (flyingMissile.direction) {
@@ -6548,16 +6490,16 @@ function moveFlyingMissileInClient(myPlayerObj, flyingMissilesMap) {
       if (flyingMissile.y > gameObj.fieldHeight) flyingMissile.y -= gameObj.fieldHeight;
     }
   } catch (err) {
-    _didIteratorError7 = true;
-    _iteratorError7 = err;
+    _didIteratorError6 = true;
+    _iteratorError6 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion7 && _iterator7.return) {
-        _iterator7.return();
+      if (!_iteratorNormalCompletion6 && _iterator6.return) {
+        _iterator6.return();
       }
     } finally {
-      if (_didIteratorError7) {
-        throw _iteratorError7;
+      if (_didIteratorError6) {
+        throw _iteratorError6;
       }
     }
   }

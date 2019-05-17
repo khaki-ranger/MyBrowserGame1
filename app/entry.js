@@ -51,6 +51,10 @@ function init() {
   // 障害物の画像
   gameObj.obstacleImage = new Image();
   gameObj.obstacleImage.src = '/images/obstacle.png';
+
+  // ミサイルの画像
+  gameObj.missileImage = new Image();
+  gameObj.missileImage.src = '/images/missile.png';
 }
 init();
 
@@ -62,6 +66,10 @@ function ticker() {
   drawMap(gameObj);
   // プレイヤーを描画する
   drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+  // スコアの画面を初期化する
+  gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
+  drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
+  drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
 }
 setInterval(ticker, 33);
 
@@ -80,6 +88,18 @@ function drawPlayer(ctxField, myPlayerObj) {
       gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2)
   );
   ctxField.restore();
+}
+
+function drawMissiles(ctxScore, missilesMany) {
+  for (let i = 0; i < missilesMany; i++) {
+    ctxScore.drawImage(gameObj.missileImage, 50 * i, 80);
+  }
+}
+
+function drawGasTimer(ctxScore, gasTime) {
+  ctxScore.fillStyle = "rgb(0, 220, 250)";
+  ctxScore.font = 'bold 40px Arial';
+  ctxScore.fillText(gasTime, 110, 50);
 }
 
 function getRadian(kakudo) {
@@ -109,6 +129,8 @@ socket.on('map data', (compressed) => {
     player.score = compressedPlayerData[4];
     player.isAlive = compressedPlayerData[5];
     player.direction = compressedPlayerData[6];
+    player.missilesMany = compressedPlayerData[7];
+    player.gasTime = compressedPlayerData[8];
 
     gameObj.playersMap.set(player.playerId, player);
 
@@ -119,6 +141,8 @@ socket.on('map data', (compressed) => {
       gameObj.myPlayerObj.displayName = compressedPlayerData[3];
       gameObj.myPlayerObj.score = compressedPlayerData[4];
       gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
+      gameObj.myPlayerObj.missilesMany = compressedPlayerData[7];
+      gameObj.myPlayerObj.gasTime = compressedPlayerData[8];
     }
   }
 
@@ -128,8 +152,8 @@ socket.on('map data', (compressed) => {
   });
 
   gameObj.gasMap = new Map();
-  gasArray.forEach((compressedAirData, index) => {
-    gameObj.gasMap.set(index, { x: compressedAirData[0], y: compressedAirData[1] });     
+  gasArray.forEach((compressedGasData, index) => {
+    gameObj.gasMap.set(index, { x: compressedGasData[0], y: compressedGasData[1] });     
   });
 
   gameObj.obstacleMap = new Map();

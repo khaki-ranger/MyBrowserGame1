@@ -11,7 +11,7 @@ const gameObj = {
   gasRadius: 6,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
-  deg: 0,
+  counter: 0,
   rotationDegreeByDirection: {
     'left': 0,
     'up': 270,
@@ -70,6 +70,8 @@ function ticker() {
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
   drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
+
+  gameObj.counter = (gameObj.counter + 1) % 10000;
 }
 setInterval(ticker, 33);
 
@@ -97,7 +99,7 @@ function drawMissiles(ctxScore, missilesMany) {
 }
 
 function drawGasTimer(ctxScore, gasTime) {
-  ctxScore.fillStyle = "rgb(0, 220, 250)";
+  ctxScore.fillStyle = 'rgb(0, 220, 250)';
   ctxScore.font = 'bold 40px Arial';
   ctxScore.fillText(gasTime, 110, 50);
 }
@@ -164,6 +166,78 @@ socket.on('map data', (compressed) => {
 });
 
 function drawMap(gameObj) {
+
+  // 敵プレイヤーと COM の描画
+  for (let [key, tekiPlayerObj] of gameObj.playersMap) {
+    if (key === gameObj.myPlayerObj.playerId) { continue; } // 自分は描画しない
+
+    const distanceObj = calculationBetweenTwoPoints(
+      gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
+      tekiPlayerObj.x, tekiPlayerObj.y,
+      gameObj.fieldWidth, gameObj.fieldHeight,
+      gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
+    );
+
+    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+
+      if (tekiPlayerObj.isAlive === false) {
+        continue;
+      }
+
+      const drawRadius = gameObj.counter % 12 + 2 + 12;
+      const clearRadius = drawRadius - 2;
+      const drawRadius2 = gameObj.counter % 12 + 2;
+      const clearRadius2 = drawRadius2 - 2;
+
+      gameObj.ctxField.fillStyle = 'rgba(0, 0, 255, 1)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+
+      gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+
+      gameObj.ctxField.fillStyle = 'rgba(0, 0, 255, 1)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius2, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+
+      gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius2, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+
+      if (tekiPlayerObj.displayName === 'anonymous') {
+
+        gameObj.ctxField.strokeStyle = 'rgba(250, 250, 250, 1)';
+        gameObj.ctxField.fillStyle = 'rgba(250, 250, 250, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
+        gameObj.ctxField.lineTo(distanceObj.drawX + 20, distanceObj.drawY - 20);
+        gameObj.ctxField.lineTo(distanceObj.drawX + 20 + 40, distanceObj.drawY - 20);
+        gameObj.ctxField.stroke();
+
+        gameObj.ctxField.font = '8px Arial';
+        gameObj.ctxField.fillText('anonymous', distanceObj.drawX + 20, distanceObj.drawY - 20 - 1);
+
+      } else if (tekiPlayerObj.displayName) {
+
+        gameObj.ctxField.strokeStyle = 'rgba(250, 250, 250, 1)';
+        gameObj.ctxField.fillStyle = 'rgba(250, 250, 250, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
+        gameObj.ctxField.lineTo(distanceObj.drawX + 20, distanceObj.drawY - 20);
+        gameObj.ctxField.lineTo(distanceObj.drawX + 20 + 40, distanceObj.drawY - 20);
+        gameObj.ctxField.stroke();
+
+        gameObj.ctxField.font = '8px Arial';
+        gameObj.ctxField.fillText(tekiPlayerObj.displayName, distanceObj.drawX + 20, distanceObj.drawY - 20 - 1);
+
+      }
+    }
+  }
 
   // アイテムの描画
   for (let [index, item] of gameObj.itemsMap) {

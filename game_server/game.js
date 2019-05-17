@@ -36,32 +36,27 @@ const gameTicker = setInterval(() => {
   checkGetItem(gameObj.playersMap, gameObj.itemsMap, gameObj.gasMap); // アイテムの取得チェック
 }, 33);
 
-function movePlayers(playersMap) {
-  for (let [playerId, player] of playersMap) {
+function movePlayer(player) {
+  if (player.isAlive === false) return;
 
-    if (player.isAlive === false) {
-      continue;
-    }
-
-    switch (player.direction) {
-      case 'left':
-        player.x -= gameObj.movingDistance;
-        break;
-      case 'up':
-        player.y -= gameObj.movingDistance;
-        break;
-      case 'down':
-        player.y += gameObj.movingDistance;
-        break;
-      case 'right':
-        player.x += gameObj.movingDistance;
-        break;
-    }
-    if (player.x > gameObj.fieldWidth) player.x -= gameObj.fieldWidth;
-    if (player.x < 0) player.x += gameObj.fieldWidth;
-    if (player.y < 0) player.y += gameObj.fieldHeight;
-    if (player.y > gameObj.fieldHeight) player.y -= gameObj.fieldHeight;
+  switch (player.direction) {
+    case 'left':
+      player.x -= gameObj.movingDistance;
+      break;
+    case 'up':
+      player.y -= gameObj.movingDistance;
+      break;
+    case 'down':
+      player.y += gameObj.movingDistance;
+      break;
+    case 'right':
+      player.x += gameObj.movingDistance;
+      break;
   }
+  if (player.x > gameObj.fieldWidth) player.x -= gameObj.fieldWidth;
+  if (player.x < 0) player.x += gameObj.fieldWidth;
+  if (player.y < 0) player.y += gameObj.fieldHeight;
+  if (player.y > gameObj.fieldHeight) player.y -= gameObj.fieldHeight;
 }
 
 function checkGetItem(playersMap, itemsMap, gasMap) {
@@ -208,7 +203,7 @@ function getMapData() {
 function updatePlayerDirection(socketId, direction) {
   const playerObj = gameObj.playersMap.get(socketId);
   playerObj.direction = direction;
-  movePlayers(gameObj.playersMap);
+  movePlayer(playerObj);
 }
 
 function disconnect(socketId) {

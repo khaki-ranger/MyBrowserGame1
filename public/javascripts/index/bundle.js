@@ -5768,7 +5768,7 @@ var gameObj = {
   gasRadius: 6,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
-  deg: 0,
+  counter: 0,
   rotationDegreeByDirection: {
     'left': 0,
     'up': 270,
@@ -5827,6 +5827,8 @@ function ticker() {
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
   drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
+
+  gameObj.counter = (gameObj.counter + 1) % 10000;
 }
 setInterval(ticker, 33);
 
@@ -5852,7 +5854,7 @@ function drawMissiles(ctxScore, missilesMany) {
 }
 
 function drawGasTimer(ctxScore, gasTime) {
-  ctxScore.fillStyle = "rgb(0, 220, 250)";
+  ctxScore.fillStyle = 'rgb(0, 220, 250)';
   ctxScore.font = 'bold 40px Arial';
   ctxScore.fillText(gasTime, 110, 50);
 }
@@ -5940,33 +5942,86 @@ socket.on('map data', function (compressed) {
 
 function drawMap(gameObj) {
 
-  // アイテムの描画
+  // 敵プレイヤーと COM の描画
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = gameObj.itemsMap[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+    for (var _iterator2 = gameObj.playersMap[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       var _ref = _step2.value;
 
       var _ref2 = _slicedToArray(_ref, 2);
 
-      var index = _ref2[0];
-      var item = _ref2[1];
+      var key = _ref2[0];
+      var tekiPlayerObj = _ref2[1];
 
+      if (key === gameObj.myPlayerObj.playerId) {
+        continue;
+      } // 自分は描画しない
 
-      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, item.x, item.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, tekiPlayerObj.x, tekiPlayerObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
       if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
-        gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
+        if (tekiPlayerObj.isAlive === false) {
+          continue;
+        }
+
+        var drawRadius = gameObj.counter % 12 + 2 + 12;
+        var clearRadius = drawRadius - 2;
+        var drawRadius2 = gameObj.counter % 12 + 2;
+        var clearRadius2 = drawRadius2 - 2;
+
+        gameObj.ctxField.fillStyle = 'rgba(0, 0, 255, 1)';
         gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.itemRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius, 0, Math.PI * 2, true);
         gameObj.ctxField.fill();
+
+        gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
+
+        gameObj.ctxField.fillStyle = 'rgba(0, 0, 255, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius2, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
+
+        gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius2, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
+
+        if (tekiPlayerObj.displayName === 'anonymous') {
+
+          gameObj.ctxField.strokeStyle = 'rgba(250, 250, 250, 1)';
+          gameObj.ctxField.fillStyle = 'rgba(250, 250, 250, 1)';
+          gameObj.ctxField.beginPath();
+          gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
+          gameObj.ctxField.lineTo(distanceObj.drawX + 20, distanceObj.drawY - 20);
+          gameObj.ctxField.lineTo(distanceObj.drawX + 20 + 40, distanceObj.drawY - 20);
+          gameObj.ctxField.stroke();
+
+          gameObj.ctxField.font = '8px Arial';
+          gameObj.ctxField.fillText('anonymous', distanceObj.drawX + 20, distanceObj.drawY - 20 - 1);
+        } else if (tekiPlayerObj.displayName) {
+
+          gameObj.ctxField.strokeStyle = 'rgba(250, 250, 250, 1)';
+          gameObj.ctxField.fillStyle = 'rgba(250, 250, 250, 1)';
+          gameObj.ctxField.beginPath();
+          gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
+          gameObj.ctxField.lineTo(distanceObj.drawX + 20, distanceObj.drawY - 20);
+          gameObj.ctxField.lineTo(distanceObj.drawX + 20 + 40, distanceObj.drawY - 20);
+          gameObj.ctxField.stroke();
+
+          gameObj.ctxField.font = '8px Arial';
+          gameObj.ctxField.fillText(tekiPlayerObj.displayName, distanceObj.drawX + 20, distanceObj.drawY - 20 - 1);
+        }
       }
     }
 
-    // ガスの描画
+    // アイテムの描画
   } catch (err) {
     _didIteratorError2 = true;
     _iteratorError2 = err;
@@ -5987,27 +6042,27 @@ function drawMap(gameObj) {
   var _iteratorError3 = undefined;
 
   try {
-    for (var _iterator3 = gameObj.gasMap[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+    for (var _iterator3 = gameObj.itemsMap[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
       var _ref3 = _step3.value;
 
       var _ref4 = _slicedToArray(_ref3, 2);
 
-      var gasKey = _ref4[0];
-      var gasObj = _ref4[1];
+      var index = _ref4[0];
+      var item = _ref4[1];
 
 
-      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, gasObj.x, gasObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, item.x, item.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
       if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
-        gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
+        gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
         gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.itemRadius, 0, Math.PI * 2, true);
         gameObj.ctxField.fill();
       }
     }
 
-    // 障害物の描画
+    // ガスの描画
   } catch (err) {
     _didIteratorError3 = true;
     _iteratorError3 = err;
@@ -6028,22 +6083,27 @@ function drawMap(gameObj) {
   var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator4 = gameObj.obstacleMap[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+    for (var _iterator4 = gameObj.gasMap[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
       var _ref5 = _step4.value;
 
       var _ref6 = _slicedToArray(_ref5, 2);
 
-      var obstacleKey = _ref6[0];
-      var obstacleObj = _ref6[1];
+      var gasKey = _ref6[0];
+      var gasObj = _ref6[1];
 
 
-      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, gasObj.x, gasObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
       if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
-        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
+        gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
+        gameObj.ctxField.beginPath();
+        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
+        gameObj.ctxField.fill();
       }
     }
+
+    // 障害物の描画
   } catch (err) {
     _didIteratorError4 = true;
     _iteratorError4 = err;
@@ -6055,6 +6115,42 @@ function drawMap(gameObj) {
     } finally {
       if (_didIteratorError4) {
         throw _iteratorError4;
+      }
+    }
+  }
+
+  var _iteratorNormalCompletion5 = true;
+  var _didIteratorError5 = false;
+  var _iteratorError5 = undefined;
+
+  try {
+    for (var _iterator5 = gameObj.obstacleMap[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+      var _ref7 = _step5.value;
+
+      var _ref8 = _slicedToArray(_ref7, 2);
+
+      var obstacleKey = _ref8[0];
+      var obstacleObj = _ref8[1];
+
+
+      var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+
+      if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
+
+        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
+      }
+    }
+  } catch (err) {
+    _didIteratorError5 = true;
+    _iteratorError5 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion5 && _iterator5.return) {
+        _iterator5.return();
+      }
+    } finally {
+      if (_didIteratorError5) {
+        throw _iteratorError5;
       }
     }
   }

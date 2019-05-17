@@ -339,78 +339,14 @@ function drawMap(gameObj) {
       distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2 + 50)
     ) {
 
-      if (flyingMissile.emitPlayerId === gameObj.myPlayerObj.playerId) { // 自分自身のミサイルの描画
+      const drawRadius = gameObj.counter % 8 + 1;
+      const clearRadius = drawRadius - 2;
 
-        const rotationDegree = gameObj.rotationDegreeByFlyingMissileDirection[flyingMissile.direction];
-        gameObj.ctxField.save();
-        gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
-        gameObj.ctxField.rotate(getRadian(rotationDegree));
-        gameObj.ctxField.drawImage(
-          gameObj.missileImage, -gameObj.missileImage.width / 2, -gameObj.missileImage.height / 2
-        );
-        gameObj.ctxField.restore();
-
-        gameObj.ctxField.strokeStyle = "rgba(250, 250, 250, 0.9)";
-        gameObj.ctxField.fillStyle = "rgba(250, 250, 250, 0.9)";
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
-        gameObj.ctxField.lineTo(distanceObj.drawX + 20, distanceObj.drawY - 20);
-        gameObj.ctxField.lineTo(distanceObj.drawX + 20 + 35, distanceObj.drawY - 20);
-        gameObj.ctxField.stroke();
-
-        gameObj.ctxField.font = '11px Arial';
-        gameObj.ctxField.fillText('missile', distanceObj.drawX + 20, distanceObj.drawY - 20 - 2);
-
-      } else { // 他人のミサイルの描画
-
-        const drawRadius1 = gameObj.counter % 8 + 2 + 20;
-        const clearRadius1 = drawRadius1 - 2;
-        const drawRadius2 = gameObj.counter % 8 + 2 + 10;
-        const clearRadius2 = drawRadius2 - 2;
-        const drawRadius3 = gameObj.counter % 8 + 2 + 0;
-        const clearRadius3 = drawRadius3 - 2;
-
-        gameObj.ctxField.fillStyle = 'rgb(255, 0, 0)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius1, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius1, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.fillStyle = 'rgba(255, 0, 0)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius2, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius2, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.fillStyle = 'rgba(255, 0, 0)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius3, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.fillStyle = 'rgb(0, 20, 50)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, clearRadius3, 0, Math.PI * 2, true);
-        gameObj.ctxField.fill();
-
-        gameObj.ctxField.strokeStyle = 'rgb(250, 250, 250)';
-        gameObj.ctxField.fillStyle = 'rgb(250, 250, 250)';
-        gameObj.ctxField.beginPath();
-        gameObj.ctxField.moveTo(distanceObj.drawX, distanceObj.drawY);
-        gameObj.ctxField.lineTo(distanceObj.drawX + 30, distanceObj.drawY - 30);
-        gameObj.ctxField.lineTo(distanceObj.drawX + 30 + 35, distanceObj.drawY - 30);
-        gameObj.ctxField.stroke();
-
-        gameObj.ctxField.font = '11px Arial';
-        gameObj.ctxField.fillText('missile', distanceObj.drawX + 30, distanceObj.drawY - 30 - 2);
-      }
+      gameObj.ctxField.fillStyle = 'rgba(255, 0, 0, .5)';
+      gameObj.ctxField.beginPath();
+      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, drawRadius, 0, Math.PI * 2, true);
+      gameObj.ctxField.fill();
+     
     }
   }
 }

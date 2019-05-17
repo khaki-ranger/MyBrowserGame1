@@ -61,7 +61,15 @@ function movePlayer(player) {
 
 function checkGetItem(playersMap, itemsMap, gasMap) {
   for (let [hashKey, playerObj] of playersMap) {
-    if (playerObj.isAlive === false) continue;
+
+    if (playerObj.isAlive === false) {
+      if (playerObj.deadCount < 70) {
+        playerObj.deadCount += 1;
+      } else {
+        gameObj.playersMap.delete(hashKey);
+      }
+      continue;
+    }
 
     playerObj.aliveTime.clock += 1;
     if (playerObj.aliveTime.clock === 30) {
@@ -136,6 +144,7 @@ function newConnection(socketId, displayName, thumbUrl) {
     missilesMany: 0,
     gasTime: 99,
     aliveTime: { 'clock': 0, 'seconds': 0 },
+    deadCount: 0,
     score: 0
   };
   gameObj.playersMap.set(socketId, playerObj);
@@ -166,6 +175,7 @@ function getMapData() {
     playerDataForSend.push(plyer.direction);
     playerDataForSend.push(plyer.missilesMany);
     playerDataForSend.push(plyer.gasTime);
+    playerDataForSend.push(plyer.deadCount);
 
     playersArray.push(playerDataForSend);
   }

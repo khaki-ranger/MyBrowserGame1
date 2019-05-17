@@ -9,6 +9,7 @@ const gameObj = {
   scoreCanvasHeight: 500,
   itemRadius: 4,
   gasRadius: 6,
+  bomCellPx: 32,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
   counter: 0,
@@ -55,6 +56,10 @@ function init() {
   // ミサイルの画像
   gameObj.missileImage = new Image();
   gameObj.missileImage.src = '/images/missile.png';
+
+  // 爆発の画像集
+  gameObj.bomListImage = new Image();
+  gameObj.bomListImage.src = '/images/bomlist.png';
 }
 init();
 
@@ -62,10 +67,16 @@ function ticker() {
   if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
   // フィールドの画面を初期化する
   gameObj.ctxField.clearRect(0, 0, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
+
   // アイテムなどの要素を描画する
   drawMap(gameObj);
+
   // プレイヤーを描画する
   drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+  if (gameObj.myPlayerObj.isAlive === false && gameObj.myPlayerObj.deadCount > 60) {
+    drawGameOver(gameObj.ctxField);
+  }
+
   // スコアの画面を初期化する
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
   drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
@@ -75,7 +86,21 @@ function ticker() {
 }
 setInterval(ticker, 33);
 
+function drawGameOver(ctxField) {
+  ctxField.font = 'bold 76px arial black';
+  ctxField.fillStyle = "rgb(0, 220, 250)";
+  ctxField.fillText('Game Over', 20, 270);
+  ctxField.strokeStyle = "rgb(0, 0, 0)";
+  ctxField.lineWidth = 3;
+  ctxField.strokeText('Game Over', 20, 270);
+}
+
 function drawPlayer(ctxField, myPlayerObj) {
+
+  if (myPlayerObj.isAlive === false) {
+    drawBom(ctxField, gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2, myPlayerObj.deadCount);
+    return;
+  }
 
   const rotationDegree = gameObj.rotationDegreeByDirection[myPlayerObj.direction];
 
@@ -90,6 +115,22 @@ function drawPlayer(ctxField, myPlayerObj) {
       gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2)
   );
   ctxField.restore();
+}
+
+function drawBom(ctxField, drawX, drawY, deadCount) {
+  if (deadCount >= 60) return;
+
+  const drawBomNumber = Math.floor(deadCount / 6);
+  const cropX = (drawBomNumber % (gameObj.bomListImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
+  const cropY = Math.floor(drawBomNumber / (gameObj.bomListImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
+
+  ctxField.drawImage(
+    gameObj.bomListImage,
+    cropX, cropY,
+    gameObj.bomCellPx, gameObj.bomCellPx,
+    drawX - gameObj.bomCellPx / 2, drawY - gameObj.bomCellPx / 2,
+    gameObj.bomCellPx, gameObj.bomCellPx
+  ); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
 }
 
 function drawMissiles(ctxScore, missilesMany) {
@@ -133,6 +174,7 @@ socket.on('map data', (compressed) => {
     player.direction = compressedPlayerData[6];
     player.missilesMany = compressedPlayerData[7];
     player.gasTime = compressedPlayerData[8];
+    player.deadCount = compressedPlayerData[9];
 
     gameObj.playersMap.set(player.playerId, player);
 
@@ -145,6 +187,7 @@ socket.on('map data', (compressed) => {
       gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
       gameObj.myPlayerObj.missilesMany = compressedPlayerData[7];
       gameObj.myPlayerObj.gasTime = compressedPlayerData[8];
+      gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
     }
   }
 
@@ -181,6 +224,7 @@ function drawMap(gameObj) {
     if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
 
       if (tekiPlayerObj.isAlive === false) {
+        drawBom(gameObj.ctxField, distanceObj.drawX, distanceObj.drawY, tekiPlayerObj.deadCount);
         continue;
       }
 

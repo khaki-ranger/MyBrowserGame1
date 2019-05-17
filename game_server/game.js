@@ -24,6 +24,8 @@ const gameObj = {
   itemRadius: 4,
   gasRadius: 6,
   addGasTime: 30,
+  itemPoint: 3,
+  killPoint: 500,
   playerImageWidth: 48
 };
 
@@ -127,6 +129,7 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
 
         gameObj.itemsMap.delete(itemKey);
         playerObj.missilesMany = playerObj.missilesMany > 5 ? 6 : playerObj.missilesMany + 1;
+        playerObj.score += gameObj.itemPoint;
         addItem();
       }
     }
@@ -149,6 +152,7 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
         } else {
           playerObj.gasTime += gameObj.addGasTime;
         }
+        playerObj.score += gameObj.itemPoint;
         addGas();
       }
     }
@@ -166,6 +170,14 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
         playerObj.playerId !== flyingMissile.emitPlayerId
       ) {
         playerObj.isAlive = false;
+
+        // 得点の更新
+        if (playersMap.has(flyingMissile.emitPlayerSocketId)) {
+          const emitPlayer = playersMap.get(flyingMissile.emitPlayerSocketId);
+          emitPlayer.score += gameObj.killPoint;
+          playersMap.set(flyingMissile.emitPlayerSocketId, emitPlayer);
+        }
+
         flyingMissilesMap.delete(missileId); // ミサイルの削除
       }
     }

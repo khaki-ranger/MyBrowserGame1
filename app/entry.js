@@ -9,7 +9,6 @@ const gameObj = {
   scoreCanvasHeight: 500,
   movingDistance: 10,
   itemRadius: 4,
-  gasRadius: 6,
   bomCellPx: 32,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
@@ -31,7 +30,6 @@ const gameObj = {
   fieldWidth: null,
   fieldHeight: null,
   itemsMap: new Map(),
-  gasMap: new Map(),
   obstacleMap: new Map(),
   flyingMissilesMap: new Map()
 };
@@ -87,7 +85,6 @@ function ticker() {
 
   // スコアの画面を初期化する
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
-  drawGasTimer(gameObj.ctxScore, gameObj.myPlayerObj.gasTime);
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
   drawScore(gameObj.ctxScore, gameObj.myPlayerObj.score);
   drawRanking(gameObj.ctxScore, gameObj.playersMap);
@@ -151,12 +148,6 @@ function drawMissiles(ctxScore, missilesMany) {
   }
 }
 
-function drawGasTimer(ctxScore, gasTime) {
-  ctxScore.fillStyle = 'rgb(0, 220, 250)';
-  ctxScore.font = 'bold 40px Arial';
-  ctxScore.fillText(gasTime, 110, 50);
-}
-
 function getRadian(kakudo) {
   return kakudo * Math.PI / 180
 }
@@ -200,9 +191,8 @@ socket.on('start data', (startObj) => {
 socket.on('map data', (compressed) => {
   const playersArray = compressed[0];
   const itemsArray = compressed[1];
-  const gasArray = compressed[2];
-  const obstacleArray = compressed[3];
-  const flyingMissilesArray = compressed[4];
+  const obstacleArray = compressed[2];
+  const flyingMissilesArray = compressed[3];
 
   gameObj.playersMap = new Map();
   for (let compressedPlayerData of playersArray) {
@@ -216,8 +206,7 @@ socket.on('map data', (compressed) => {
     player.isAlive = compressedPlayerData[5];
     player.direction = compressedPlayerData[6];
     player.missilesMany = compressedPlayerData[7];
-    player.gasTime = compressedPlayerData[8];
-    player.deadCount = compressedPlayerData[9];
+    player.deadCount = compressedPlayerData[8];
 
     gameObj.playersMap.set(player.playerId, player);
 
@@ -229,19 +218,13 @@ socket.on('map data', (compressed) => {
       gameObj.myPlayerObj.score = compressedPlayerData[4];
       gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
       gameObj.myPlayerObj.missilesMany = compressedPlayerData[7];
-      gameObj.myPlayerObj.gasTime = compressedPlayerData[8];
-      gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
+      gameObj.myPlayerObj.deadCount = compressedPlayerData[8];
     }
   }
 
   gameObj.itemsMap = new Map();
   itemsArray.forEach((compressedItemData, index) => {
     gameObj.itemsMap.set(index, { x: compressedItemData[0], y: compressedItemData[1] });       
-  });
-
-  gameObj.gasMap = new Map();
-  gasArray.forEach((compressedGasData, index) => {
-    gameObj.gasMap.set(index, { x: compressedGasData[0], y: compressedGasData[1] });     
   });
 
   gameObj.obstacleMap = new Map();
@@ -350,25 +333,6 @@ function drawMap(gameObj) {
       gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
       gameObj.ctxField.beginPath();
       gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.itemRadius, 0, Math.PI * 2, true);
-      gameObj.ctxField.fill();
-    }
-  }
-
-  // ガスの描画
-  for (const [gasKey, gasObj] of gameObj.gasMap) {
-
-    const distanceObj = calculationBetweenTwoPoints(
-      gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
-      gasObj.x, gasObj.y,
-      gameObj.fieldWidth, gameObj.fieldHeight,
-      gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
-    );
-
-    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
-
-      gameObj.ctxField.fillStyle = 'rgb(0, 220, 255, 1)';
-      gameObj.ctxField.beginPath();
-      gameObj.ctxField.arc(distanceObj.drawX, distanceObj.drawY, gameObj.gasRadius, 0, Math.PI * 2, true);
       gameObj.ctxField.fill();
     }
   }

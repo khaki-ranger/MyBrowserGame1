@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const gameObj = {
   playersMap: new Map(),
   itemsMap: new Map(),
-  gasMap: new Map(),
   COMMap: new Map(),
   addingCOMPlayerNum: 9,
   obstacleMap: new Map(),
@@ -17,13 +16,9 @@ const gameObj = {
   fieldWidth: 1000,
   fieldHeight: 1000,
   itemTotal: 15,
-  gasTotal: 10,
   obstacleTotal: 30,
   movingDistance: 10,
-  gasTotal: 10,
   itemRadius: 4,
-  gasRadius: 6,
-  addGasTime: 30,
   itemPoint: 3,
   killPoint: 500,
   playerImageWidth: 48
@@ -32,9 +27,6 @@ const gameObj = {
 function init() {
   for (let i = 0; i < gameObj.itemTotal; i++) {
     addItem();
-  }
-  for (let a = 0; a < gameObj.gasTotal; a++) {
-    addGas();
   }
   for (let o = 0; o < gameObj.obstacleTotal; o++) {
     addObstacle();
@@ -46,7 +38,7 @@ const gameTicker = setInterval(() => {
   COMMoveDecision(gameObj.COMMap); // COM の行動選択
   const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
   moveMissile(gameObj.flyingMissilesMap);
-  checkGetItem(playersAndCOMMap, gameObj.itemsMap, gameObj.gasMap, gameObj.flyingMissilesMap); // アイテムの取得チェック
+  checkGetItem(playersAndCOMMap, gameObj.itemsMap, gameObj.flyingMissilesMap); // アイテムの取得チェック
   addCOM();
 }, 33);
 
@@ -94,7 +86,7 @@ function movePlayer(player) {
   if (player.y > gameObj.fieldHeight) player.y -= gameObj.fieldHeight;
 }
 
-function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
+function checkGetItem(playersMap, itemsMap, flyingMissilesMap) {
   for (let [hashKey, playerObj] of playersMap) {
 
     if (playerObj.isAlive === false) {
@@ -111,7 +103,6 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
     if (playerObj.aliveTime.clock === 30) {
       playerObj.aliveTime.clock = 0;
       playerObj.aliveTime.seconds += 1;
-      decreaseGas(playerObj);
       playerObj.score += 1;
     }
 
@@ -131,29 +122,6 @@ function checkGetItem(playersMap, itemsMap, gasMap, flyingMissilesMap) {
         playerObj.missilesMany = playerObj.missilesMany > 5 ? 6 : playerObj.missilesMany + 1;
         playerObj.score += gameObj.itemPoint;
         addItem();
-      }
-    }
-
-    // アイテムの空気（青丸）
-    for (let [gasKey, gasObj] of gasMap) {
-
-      const distanceObj = calculationBetweenTwoPoints(
-        playerObj.x, playerObj.y, gasObj.x, gasObj.y, gameObj.fieldWidth, gameObj.fieldHeight
-      );
-
-      if (
-        distanceObj.distanceX <= (gameObj.playerImageWidth / 2 + gameObj.gasRadius) &&
-        distanceObj.distanceY <= (gameObj.playerImageWidth / 2 + gameObj.gasRadius)
-      ) { // got gas!
-
-        gameObj.gasMap.delete(gasKey);
-        if (playerObj.gasTime + gameObj.addGasTime > 99) {
-          playerObj.gasTime = 99;
-        } else {
-          playerObj.gasTime += gameObj.addGasTime;
-        }
-        playerObj.score += gameObj.itemPoint;
-        addGas();
       }
     }
 
@@ -216,13 +184,6 @@ function moveMissile(flyingMissilesMap) { // ミサイルの移動
   }
 }
 
-function decreaseGas(playerObj) {
-  playerObj.gasTime -= 1;
-  if (playerObj.gasTime === 0) {
-    playerObj.isAlive = false;
-  }
-}
-
 function newConnection(socketId, displayName, thumbUrl) {
   const playerX = Math.floor(Math.random() * gameObj.fieldWidth);
   const playerY = Math.floor(Math.random() * gameObj.fieldHeight);
@@ -237,7 +198,6 @@ function newConnection(socketId, displayName, thumbUrl) {
     isAlive: true,
     direction: 'left',
     missilesMany: 0,
-    gasTime: 99,
     aliveTime: { 'clock': 0, 'seconds': 0 },
     deadCount: 0,
     score: 0
@@ -256,7 +216,6 @@ function newConnection(socketId, displayName, thumbUrl) {
 function getMapData() {
   const playersArray = [];
   const itemsArray = [];
-  const gasArray = [];
   const flyingMissilesArray = [];
   const obstacleArray = [];
   const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
@@ -272,7 +231,6 @@ function getMapData() {
     playerDataForSend.push(plyer.isAlive);
     playerDataForSend.push(plyer.direction);
     playerDataForSend.push(plyer.missilesMany);
-    playerDataForSend.push(plyer.gasTime);
     playerDataForSend.push(plyer.deadCount);
 
     playersArray.push(playerDataForSend);
@@ -285,15 +243,6 @@ function getMapData() {
     itemDataForSend.push(item.y);
 
     itemsArray.push(itemDataForSend);
-  }
-    
-  for (let [id, gas] of gameObj.gasMap) {
-    const gasDataForSend = [];
-
-    gasDataForSend.push(gas.x);
-    gasDataForSend.push(gas.y);
-
-    gasArray.push(gasDataForSend);
   }
     
   for (let [id, obstacle] of gameObj.obstacleMap) {
@@ -316,7 +265,7 @@ function getMapData() {
     flyingMissilesArray.push(flyingMissileDataForSend);
   }
 
-  return [playersArray, itemsArray, gasArray, obstacleArray, flyingMissilesArray];
+  return [playersArray, itemsArray, obstacleArray, flyingMissilesArray];
 }
 
 function updatePlayerDirection(socketId, direction) {
@@ -367,22 +316,6 @@ function addItem() {
     y: itemY,
   };
   gameObj.itemsMap.set(itemKey, itemObj);
-}
-
-function addGas() {
-  const gasX = Math.floor(Math.random() * gameObj.fieldWidth);
-  const gasY = Math.floor(Math.random() * gameObj.fieldHeight);
-  const gasKey = `${gasX},${gasY}`;
-
-  if (gameObj.gasMap.has(gasKey)) { // アイテムの位置が被ってしまった場合は
-    return addGas(); // 場所が重複した場合は作り直し
-  }
-
-  const gasObj = {
-    x: gasX,
-    y: gasY,
-  };
-  gameObj.gasMap.set(gasKey, gasObj);
 }
 
 function addObstacle() {

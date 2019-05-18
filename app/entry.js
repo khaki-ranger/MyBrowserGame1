@@ -5,12 +5,13 @@ import io from 'socket.io-client';
 const gameObj = {
   fieldCanvasWidth: 500,
   fieldCanvasHeight: 500,
-  scoreCanvasWidth: 300,
+  scoreCanvasWidth: 200,
   scoreCanvasHeight: 500,
   movingDistance: 10,
   itemRadius: 4,
   playerCellPx: 32,
   enemyCellPx: 32,
+  missileCellPx: 32,
   bomCellPx: 32,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
@@ -20,12 +21,6 @@ const gameObj = {
     'up': {x: 32, y: 0},
     'down': {x: 0, y: 0},
     'right': {x: 32, y: 32}
-  },
-  rotationDegreeByFlyingMissileDirection: {
-    'left': 270,
-    'up': 0,
-    'down': 180,
-    'right': 90
   },
   myDisplayName: $('#main').attr('data-displayName'),
   myThumbUrl: $('#main').attr('data-thumbUrl'),
@@ -101,7 +96,7 @@ function ticker() {
 setInterval(ticker, 33);
 
 function drawGameOver(ctxField) {
-  ctxField.font = 'bold 76px MSゴシック';
+  ctxField.font = 'bold 76px Verdana';
   ctxField.fillStyle = "rgb(0, 220, 250)";
   ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, 270);
   ctxField.strokeStyle = "rgb(0, 0, 0)";
@@ -148,7 +143,7 @@ function drawBom(ctxField, drawX, drawY, deadCount) {
 
 function drawMissiles(ctxScore, missilesMany) {
   for (let i = 0; i < missilesMany; i++) {
-    ctxScore.drawImage(gameObj.missileImage, 50 * i, 80);
+    ctxScore.drawImage(gameObj.missileImage, gameObj.missileCellPx * i, 80);
   }
 }
 
@@ -172,15 +167,15 @@ function drawRanking(ctxScore, playersMap) {
   ctxScore.fillRect(0, 220, gameObj.scoreCanvasWidth, 3);
 
   ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.font = '20px Arial';
+  ctxScore.font = '16px Verdana';
 
   for (let i = 0; i < 10; i++) {
     if (!playersArray[i]) return;
 
     const rank = i + 1;
     ctxScore.fillText(
-      `${rank}th ${playersArray[i][1].displayName} ${playersArray[i][1].score}`,
-      10, 220 + (rank * 26)
+      `${rank} ${playersArray[i][1].displayName} ${playersArray[i][1].score}`,
+      10, 220 + (rank * 24)
     );
   }
 }
@@ -283,12 +278,12 @@ function drawMap(gameObj) {
 
       if (tekiPlayerObj.displayName === 'anonymous') {
         gameObj.ctxField.fillStyle = 'rgba(255, 255, 255, 1)';
-        gameObj.ctxField.font = '8px MSゴシック';
+        gameObj.ctxField.font = '8px Verdana';
         gameObj.ctxField.textAlign = 'center';
         gameObj.ctxField.fillText('anonymous', distanceObj.drawX, distanceObj.drawY - (gameObj.enemyCellPx / 2) - 4);
       } else if (tekiPlayerObj.displayName) {
         gameObj.ctxField.fillStyle = 'rgba(255, 255, 255, 1)';
-        gameObj.ctxField.font = '8px MSゴシック';
+        gameObj.ctxField.font = '8px Verdana';
         gameObj.ctxField.textAlign = 'center';
         gameObj.ctxField.fillText(tekiPlayerObj.displayName, distanceObj.drawX, distanceObj.drawY - (gameObj.enemyCellPx / 2) - 4);
       }

@@ -5769,9 +5769,8 @@ var gameObj = {
   playerCellPx: 32,
   enemyCellPx: 32,
   missileCellPx: 32,
+  obstacleCellPx: 32,
   bomCellPx: 32,
-  obstacleImageWidth: 40,
-  obstacleImageHeight: 43,
   counter: 0,
   pointByDirection: {
     'left': { x: 0, y: 32 },
@@ -6131,7 +6130,7 @@ function drawMap(gameObj) {
 
       if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
-        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX, distanceObj.drawY);
+        gameObj.ctxField.drawImage(gameObj.obstacleImage, distanceObj.drawX - gameObj.obstacleCellPx / 2, distanceObj.drawY - gameObj.obstacleCellPx / 2);
       }
     }
 

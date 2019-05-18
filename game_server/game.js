@@ -21,7 +21,7 @@ const gameObj = {
   itemRadius: 4,
   itemPoint: 3,
   killPoint: 500,
-  playerImageWidth: 48
+  playerImageWidth: 32
 };
 
 function init() {
@@ -196,7 +196,7 @@ function newConnection(socketId, displayName, thumbUrl) {
     displayName: displayName,
     thumbUrl: thumbUrl,
     isAlive: true,
-    direction: 'left',
+    direction: 'down',
     missilesMany: 0,
     aliveTime: { 'clock': 0, 'seconds': 0 },
     deadCount: 0,
@@ -349,7 +349,7 @@ function addCOM() {
         y: playerY,
         isAlive: true,
         deadCount: 0,
-        direction: 'right',
+        direction: 'down',
         missilesMany: 0,
         airTime: 99,
         aliveTime: { 'clock': 0, 'seconds': 0 },

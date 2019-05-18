@@ -5766,15 +5766,17 @@ var gameObj = {
   scoreCanvasHeight: 500,
   movingDistance: 10,
   itemRadius: 4,
+  playerCellPx: 32,
+  enemyCellPx: 32,
   bomCellPx: 32,
   obstacleImageWidth: 40,
   obstacleImageHeight: 43,
   counter: 0,
-  rotationDegreeByDirection: {
-    'left': 0,
-    'up': 270,
-    'down': 90,
-    'right': 0
+  pointByDirection: {
+    'left': { x: 0, y: 32 },
+    'up': { x: 32, y: 0 },
+    'down': { x: 0, y: 0 },
+    'right': { x: 32, y: 32 }
   },
   rotationDegreeByFlyingMissileDirection: {
     'left': 270,
@@ -5808,13 +5810,12 @@ function init() {
   gameObj.ctxScore = scoreCanvas.getContext('2d');
 
   // プレイヤーの画像
-  var playerImage = new Image();
-  playerImage.src = gameObj.myThumbUrl;
-  gameObj.playerImage = playerImage;
+  gameObj.playerImage = new Image();
+  gameObj.playerImage.src = '/images/player.png';
 
   // 敵キャラの画像
   gameObj.enemyImage = new Image();
-  gameObj.enemyImage.src = '/images/anonymous.jpg';
+  gameObj.enemyImage.src = '/images/player.png';
 
   // 障害物の画像
   gameObj.obstacleImage = new Image();
@@ -5857,12 +5858,12 @@ function ticker() {
 setInterval(ticker, 33);
 
 function drawGameOver(ctxField) {
-  ctxField.font = 'bold 76px arial black';
+  ctxField.font = 'bold 76px MSゴシック';
   ctxField.fillStyle = "rgb(0, 220, 250)";
-  ctxField.fillText('Game Over', 20, 270);
+  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, 270);
   ctxField.strokeStyle = "rgb(0, 0, 0)";
   ctxField.lineWidth = 3;
-  ctxField.strokeText('Game Over', 20, 270);
+  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, 270);
 }
 
 function drawPlayer(ctxField, myPlayerObj) {
@@ -5871,16 +5872,12 @@ function drawPlayer(ctxField, myPlayerObj) {
     drawBom(ctxField, gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2, myPlayerObj.deadCount);
     return;
   }
-
-  var rotationDegree = gameObj.rotationDegreeByDirection[myPlayerObj.direction];
+  var cropPoint = gameObj.pointByDirection[myPlayerObj.direction];
   ctxField.save();
   ctxField.translate(gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2);
-  ctxField.rotate(getRadian(rotationDegree));
-  if (myPlayerObj.direction === 'right') {
-    ctxField.scale(-1, 1);
-  }
 
-  ctxField.drawImage(gameObj.playerImage, -(gameObj.playerImage.width / 2), -(gameObj.playerImage.height / 2));
+  ctxField.drawImage(gameObj.playerImage, cropPoint.x, cropPoint.y, gameObj.playerCellPx, gameObj.playerCellPx, -(gameObj.playerCellPx / 2), -(gameObj.playerCellPx / 2), gameObj.playerCellPx, gameObj.playerCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
+
   ctxField.restore();
 }
 
@@ -6042,21 +6039,24 @@ function drawMap(gameObj) {
           continue;
         }
 
-        var rotationDegree = gameObj.rotationDegreeByDirection[tekiPlayerObj.direction];
+        var cropPoint = gameObj.pointByDirection[tekiPlayerObj.direction];
         gameObj.ctxField.save();
         gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
-        gameObj.ctxField.rotate(getRadian(rotationDegree));
-        gameObj.ctxField.drawImage(gameObj.enemyImage, -gameObj.enemyImage.width / 2, -gameObj.enemyImage.height / 2);
+
+        gameObj.ctxField.drawImage(gameObj.enemyImage, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
+
         gameObj.ctxField.restore();
 
         if (tekiPlayerObj.displayName === 'anonymous') {
           gameObj.ctxField.fillStyle = 'rgba(255, 255, 255, 1)';
-          gameObj.ctxField.font = '8px Arial';
-          gameObj.ctxField.fillText('anonymous', distanceObj.drawX - gameObj.enemyImage.width / 2, distanceObj.drawY - gameObj.enemyImage.height / 2 - 2);
+          gameObj.ctxField.font = '8px MSゴシック';
+          gameObj.ctxField.textAlign = 'center';
+          gameObj.ctxField.fillText('anonymous', distanceObj.drawX, distanceObj.drawY - gameObj.enemyCellPx / 2 - 4);
         } else if (tekiPlayerObj.displayName) {
           gameObj.ctxField.fillStyle = 'rgba(255, 255, 255, 1)';
-          gameObj.ctxField.font = '8px Arial';
-          gameObj.ctxField.fillText(tekiPlayerObj.displayName, distanceObj.drawX - gameObj.enemyImage.width / 2, distanceObj.drawY - gameObj.enemyImage.height / 2 - 2);
+          gameObj.ctxField.font = '8px MSゴシック';
+          gameObj.ctxField.textAlign = 'center';
+          gameObj.ctxField.fillText(tekiPlayerObj.displayName, distanceObj.drawX, distanceObj.drawY - gameObj.enemyCellPx / 2 - 4);
         }
       }
     }

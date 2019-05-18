@@ -6268,7 +6268,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
       if (gameObj.myPlayerObj.direction !== 'left') {
         gameObj.myPlayerObj.direction = 'left';
         drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-        movePlayerInClient(gameObj.myPlayerObj);
       }
       sendChangeDirection(socket, 'left');
       break;
@@ -6276,7 +6275,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
       if (gameObj.myPlayerObj.direction !== 'up') {
         gameObj.myPlayerObj.direction = 'up';
         drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-        movePlayerInClient(gameObj.myPlayerObj);
       }
       sendChangeDirection(socket, 'up');
       break;
@@ -6284,7 +6282,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
       if (gameObj.myPlayerObj.direction !== 'down') {
         gameObj.myPlayerObj.direction = 'down';
         drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-        movePlayerInClient(gameObj.myPlayerObj);
       }
       sendChangeDirection(socket, 'down');
       break;
@@ -6292,7 +6289,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
       if (gameObj.myPlayerObj.direction !== 'right') {
         gameObj.myPlayerObj.direction = 'right';
         drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-        movePlayerInClient(gameObj.myPlayerObj);
       }
       sendChangeDirection(socket, 'right');
       break;
@@ -6322,28 +6318,6 @@ function sendChangeDirection(socket, direction) {
 
 function sendMissileEmit(socket, direction) {
   socket.emit('missile emit', direction);
-}
-
-function movePlayerInClient(myPlayerObj) {
-  // 移動
-  switch (myPlayerObj.direction) {
-    case 'left':
-      myPlayerObj.x -= gameObj.movingDistance;
-      break;
-    case 'up':
-      myPlayerObj.y -= gameObj.movingDistance;
-      break;
-    case 'down':
-      myPlayerObj.y += gameObj.movingDistance;
-      break;
-    case 'right':
-      myPlayerObj.x += gameObj.movingDistance;
-      break;
-  }
-  if (myPlayerObj.x > gameObj.fieldWidth) myPlayerObj.x -= gameObj.fieldWidth;
-  if (myPlayerObj.x < 0) myPlayerObj.x += gameObj.fieldWidth;
-  if (myPlayerObj.y < 0) myPlayerObj.y += gameObj.fieldHeight;
-  if (myPlayerObj.y > gameObj.fieldHeight) myPlayerObj.y -= gameObj.fieldHeight;
 }
 
 function moveFlyingMissileInClient(myPlayerObj, flyingMissilesMap) {

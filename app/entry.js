@@ -420,6 +420,53 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
   return degree;
 }
 
+$(window).on('load', function(){
+  $('#btn-left').click(function(){
+    if (gameObj.myPlayerObj.direction !== 'left') {
+      gameObj.myPlayerObj.direction = 'left';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'left');
+  });
+  $('#btn-up').click(function(){
+    if (gameObj.myPlayerObj.direction !== 'up') {
+      gameObj.myPlayerObj.direction = 'up';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'up');
+  });
+  $('#btn-down').click(function(){
+    if (gameObj.myPlayerObj.direction !== 'down') {
+      gameObj.myPlayerObj.direction = 'down';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'down');
+  });
+  $('#btn-right').click(function(){
+    if (gameObj.myPlayerObj.direction !== 'right') {
+      gameObj.myPlayerObj.direction = 'right';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'right');
+  });
+  $('#btn-a').click(function(){
+    if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
+ 
+    gameObj.myPlayerObj.missilesMany -= 1;
+    const missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
+
+    const missileObj = {
+      emitPlayerId: gameObj.myPlayerObj.playerId,
+      x: gameObj.myPlayerObj.x,
+      y: gameObj.myPlayerObj.y,
+      direction: gameObj.myPlayerObj.direction,
+      id: missileId
+    };
+    gameObj.flyingMissilesMap.set(missileId, missileObj);
+    sendMissileEmit(socket, gameObj.myPlayerObj.direction);
+  });
+});
+
 $(window).keydown(function(event) {
   if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
 

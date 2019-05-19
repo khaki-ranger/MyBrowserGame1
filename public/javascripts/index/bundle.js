@@ -6258,6 +6258,53 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
   return degree;
 }
 
+(0, _jquery2.default)(window).on('load', function () {
+  (0, _jquery2.default)('#btn-left').click(function () {
+    if (gameObj.myPlayerObj.direction !== 'left') {
+      gameObj.myPlayerObj.direction = 'left';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'left');
+  });
+  (0, _jquery2.default)('#btn-up').click(function () {
+    if (gameObj.myPlayerObj.direction !== 'up') {
+      gameObj.myPlayerObj.direction = 'up';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'up');
+  });
+  (0, _jquery2.default)('#btn-down').click(function () {
+    if (gameObj.myPlayerObj.direction !== 'down') {
+      gameObj.myPlayerObj.direction = 'down';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'down');
+  });
+  (0, _jquery2.default)('#btn-right').click(function () {
+    if (gameObj.myPlayerObj.direction !== 'right') {
+      gameObj.myPlayerObj.direction = 'right';
+      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+    }
+    sendChangeDirection(socket, 'right');
+  });
+  (0, _jquery2.default)('#btn-a').click(function () {
+    if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
+
+    gameObj.myPlayerObj.missilesMany -= 1;
+    var missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
+
+    var missileObj = {
+      emitPlayerId: gameObj.myPlayerObj.playerId,
+      x: gameObj.myPlayerObj.x,
+      y: gameObj.myPlayerObj.y,
+      direction: gameObj.myPlayerObj.direction,
+      id: missileId
+    };
+    gameObj.flyingMissilesMap.set(missileId, missileObj);
+    sendMissileEmit(socket, gameObj.myPlayerObj.direction);
+  });
+});
+
 (0, _jquery2.default)(window).keydown(function (event) {
   if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
 

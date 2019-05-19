@@ -9,10 +9,20 @@ block content
       .score-holder
         canvas#score
       .controller-holder
+        .direction
+          .direction-holder
+            .left
+              button#btn-left &larr;
+            .upanddown
+              button#btn-up &uarr;
+              button#btn-down &darr;
+            .right
+              button#btn-right &rarr;
+        .button
+          a.ui-component(href="/game") Reset
+          button.ui-component#btn-a A
     .controller.right
   section.information
     .container
       h1 #{displayName} でゲームに参加中！
-      .ui-block
-        a.ui-component(href="/") このゲームから抜ける
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

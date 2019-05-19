@@ -2,6 +2,16 @@
 import $ from 'jquery';
 import io from 'socket.io-client';
 
+/* ダブルタップによる拡大を禁止 */
+var time = 0;
+document.documentElement.addEventListener('touchend', function (e) {
+var now = new Date().getTime();
+if ((now - time) < 350){
+  e.preventDefault();
+}
+time = now;
+}, false);
+
 const gameObj = {
   fieldCanvasWidth: 350,
   fieldCanvasHeight: 350,

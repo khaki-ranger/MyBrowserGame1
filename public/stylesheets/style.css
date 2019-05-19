@@ -4,6 +4,16 @@ canvas#field {
 canvas#score {
   background-color: black;
 }
+@media (max-width: 768px) {
+label.ui-component,
+a.ui-component,
+button.ui-component,
+input.ui-component,
+select.ui-component,
+textarea.ui-component {
+  font-size: 16px;
+}
+}
 /* reset */
 img {
   vertical-align: bottom;
@@ -235,26 +245,22 @@ button.ui-component {
 }
 /* game */
 .game {
-  display: table;
-  width: 100%;
   margin-bottom: 1rem;
+  padding-bottom: 10px;
   background-color: #eee;
-}
-.game>div {
-  display: table-cell;
 }
 .game .main {
   width: 350px;
+  margin: 0 auto;
 }
 .information h1 {
   text-align: center;
-  font-size: .9rem;
 }
 /* controller */
 .controller-holder {
-  margin: 1rem 0;
   display: table;
-  width: 100%;
+  width: 320px;
+  margin: 10px auto;
 }
 .controller-holder>div {
   display: table-cell;

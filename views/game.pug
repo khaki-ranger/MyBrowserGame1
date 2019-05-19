@@ -2,7 +2,6 @@ extends layout
                                 
 block content
   section.game
-    .controller.left
     .main
       .field-holder
         canvas#field
@@ -21,8 +20,6 @@ block content
         .button
           a.ui-component(href="/game") Reset
           button.ui-component#btn-a A
-    .controller.right
   section.information
     .container
-      h1 #{displayName} でゲームに参加中！
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

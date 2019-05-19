@@ -6,7 +6,7 @@ const gameObj = {
   fieldCanvasWidth: 350,
   fieldCanvasHeight: 350,
   scoreCanvasWidth: 350,
-  scoreCanvasHeight: 150,
+  scoreCanvasHeight: 100,
   movingDistance: 10,
   itemRadius: 4,
   playerCellPx: 32,
@@ -166,7 +166,7 @@ function drawRanking(ctxScore, playersMap) {
   ctxScore.fillStyle = "rgb(255, 255, 255)";
   ctxScore.font = '12px Verdana';
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     if (!playersArray[i]) return;
 
     const rank = i + 1;

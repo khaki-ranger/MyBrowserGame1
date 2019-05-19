@@ -5760,10 +5760,10 @@ var _socket2 = _interopRequireDefault(_socket);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var gameObj = {
-  fieldCanvasWidth: 500,
-  fieldCanvasHeight: 500,
-  scoreCanvasWidth: 200,
-  scoreCanvasHeight: 500,
+  fieldCanvasWidth: 350,
+  fieldCanvasHeight: 350,
+  scoreCanvasWidth: 350,
+  scoreCanvasHeight: 150,
   movingDistance: 10,
   itemRadius: 4,
   playerCellPx: 32,
@@ -5845,6 +5845,7 @@ function ticker() {
   drawScore(gameObj.ctxScore, gameObj.myPlayerObj.score);
   drawRanking(gameObj.ctxScore, gameObj.playersMap);
 
+  // 撃ち放たれた弾を描画する
   moveFlyingMissileInClient(gameObj.myPlayerObj, gameObj.flyingMissilesMap);
 
   gameObj.counter = (gameObj.counter + 1) % 10000;
@@ -5852,12 +5853,12 @@ function ticker() {
 setInterval(ticker, 33);
 
 function drawGameOver(ctxField) {
-  ctxField.font = 'bold 76px Verdana';
+  ctxField.font = 'bold 48px Verdana';
   ctxField.fillStyle = "rgb(0, 220, 250)";
-  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, 270);
+  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
   ctxField.strokeStyle = "rgb(0, 0, 0)";
   ctxField.lineWidth = 3;
-  ctxField.strokeText('Game Over', gameObj.fieldCanvasWidth / 2, 270);
+  ctxField.strokeText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
 }
 
 function drawPlayer(ctxField, myPlayerObj) {
@@ -5886,8 +5887,8 @@ function drawBom(ctxField, drawX, drawY, deadCount) {
 }
 
 function drawMissiles(ctxScore, missilesMany) {
-  for (var i = 0; i < missilesMany; i++) {
-    ctxScore.drawImage(gameObj.missileImage, gameObj.missileCellPx * i, 80);
+  for (var i = 1; i <= missilesMany; i++) {
+    ctxScore.drawImage(gameObj.missileImage, gameObj.scoreCanvasWidth - gameObj.missileCellPx * .75 * i - 10, 4);
   }
 }
 
@@ -5897,8 +5898,8 @@ function getRadian(kakudo) {
 
 function drawScore(ctxScore, score) {
   ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.font = '28px Arial';
-  ctxScore.fillText('score: ' + score, 10, 180);
+  ctxScore.font = '14px Verdana';
+  ctxScore.fillText('score: ' + score, 10, 24);
 }
 
 function drawRanking(ctxScore, playersMap) {
@@ -5908,16 +5909,13 @@ function drawRanking(ctxScore, playersMap) {
   });
 
   ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.fillRect(0, 220, gameObj.scoreCanvasWidth, 3);
+  ctxScore.font = '12px Verdana';
 
-  ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.font = '16px Verdana';
-
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < 5; i++) {
     if (!playersArray[i]) return;
 
     var rank = i + 1;
-    ctxScore.fillText(rank + ' ' + playersArray[i][1].displayName + ' ' + playersArray[i][1].score, 10, 220 + rank * 24);
+    ctxScore.fillText(rank + ' ' + playersArray[i][1].displayName + ' ' + playersArray[i][1].score, 10, 30 + rank * 20);
   }
 }
 

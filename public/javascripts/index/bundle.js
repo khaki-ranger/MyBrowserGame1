@@ -5759,6 +5759,16 @@ var _socket2 = _interopRequireDefault(_socket);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* ダブルタップによる拡大を禁止 */
+var time = 0;
+document.documentElement.addEventListener('touchend', function (e) {
+  var now = new Date().getTime();
+  if (now - time < 350) {
+    e.preventDefault();
+  }
+  time = now;
+}, false);
+
 var gameObj = {
   fieldCanvasWidth: 350,
   fieldCanvasHeight: 350,

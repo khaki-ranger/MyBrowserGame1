@@ -5,9 +5,9 @@ const gameObj = {
   playersMap: new Map(),
   itemsMap: new Map(),
   COMMap: new Map(),
-  addingCOMPlayerNum: 9,
   obstacleMap: new Map(),
   flyingMissilesMap: new Map(),
+  addingCOMPlayerNum: 9,
   missileAliveFlame: 180,
   missileSpeed: 3,
   missileWidth: 30,
@@ -15,11 +15,10 @@ const gameObj = {
   directions: ['left', 'up', 'down', 'right'],
   fieldWidth: 1000,
   fieldHeight: 1000,
-  itemTotal: 15,
-  obstacleTotal: 30,
+  itemTotal: 30,
+  obstacleTotal: 15,
   movingDistance: 10,
   itemRadius: 4,
-  itemPoint: 3,
   playerImageWidth: 32,
   obstacleImageWidth: 32
 };
@@ -48,7 +47,7 @@ function COMMoveDecision(COMMap) {
     switch (COMObj.level) {
       case 1:
         if (Math.floor(Math.random() * 10) === 1) {
-          movePlayer(COMObj);
+          movePlayer(COMObj, gameObj.obstacleMap);
         }
         if (Math.floor(Math.random() * 60) === 1) {
           COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
@@ -63,20 +62,64 @@ function COMMoveDecision(COMMap) {
   }
 }
 
-function movePlayer(player) {
+function movePlayer(player, obstacleMap) {
   if (player.isAlive === false) return;
 
   switch (player.direction) {
     case 'left':
+      for (let [obstacleId, obstacleObj] of obstacleMap) {
+        const distanceObj = calculationBetweenTwoPoints(
+          player.x - gameObj.movingDistance, player.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+        )
+        if (
+          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
+          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
+        ) {
+          return;
+        }
+      }
       player.x -= gameObj.movingDistance;
       break;
     case 'up':
+      for (let [obstacleId, obstacleObj] of obstacleMap) {
+        const distanceObj = calculationBetweenTwoPoints(
+          player.x, player.y - gameObj.movingDistance, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+        )
+        if (
+          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
+          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
+        ) {
+          return;
+        }
+      }
       player.y -= gameObj.movingDistance;
       break;
     case 'down':
+      for (let [obstacleId, obstacleObj] of obstacleMap) {
+        const distanceObj = calculationBetweenTwoPoints(
+          player.x, player.y + gameObj.movingDistance, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+        )
+        if (
+          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
+          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
+        ) {
+          return;
+        }
+      }
       player.y += gameObj.movingDistance;
       break;
     case 'right':
+      for (let [obstacleId, obstacleObj] of obstacleMap) {
+        const distanceObj = calculationBetweenTwoPoints(
+          player.x + gameObj.movingDistance, player.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+        )
+        if (
+          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
+          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
+        ) {
+          return;
+        }
+      }
       player.x += gameObj.movingDistance;
       break;
   }
@@ -87,6 +130,8 @@ function movePlayer(player) {
 }
 
 function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
+
+  // 弾と障害物の当たり判定
   for (let [obstacleId, obstacleObj] of obstacleMap) {
     for (let [missileId, flyingMissile] of flyingMissilesMap) {
 
@@ -95,14 +140,15 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
       );
 
       if (
-        distanceObj.distanceX <= (gameObj.obstacleImageWidth / 2 + gameObj.missileWidth / 2) &&
-        distanceObj.distanceY <= (gameObj.obstacleImageWidth / 2 + gameObj.missileHeight / 2)
+        distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.missileWidth / 4) &&
+        distanceObj.distanceY <= (gameObj.obstacleImageWidth / 4 + gameObj.missileHeight / 4)
       ) {
         flyingMissilesMap.delete(missileId); // ミサイルの削除
       }
     }
   }
 
+  // プレイヤーの当たり判定
   for (let [hashKey, playerObj] of playersMap) {
 
     if (playerObj.isAlive === false) {
@@ -131,8 +177,7 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
       if (
         distanceObj.distanceX <= (gameObj.playerImageWidth / 2 + gameObj.itemRadius) &&
         distanceObj.distanceY <= (gameObj.playerImageWidth / 2 + gameObj.itemRadius)
-      ) { // got item!
-
+      ) {
         gameObj.itemsMap.delete(itemKey);
         playerObj.missilesMany = playerObj.missilesMany > 5 ? 6 : playerObj.missilesMany + 1;
         addItem();
@@ -286,7 +331,7 @@ function getMapData() {
 function updatePlayerDirection(socketId, direction) {
   const playerObj = gameObj.playersMap.get(socketId);
   playerObj.direction = direction;
-  movePlayer(playerObj);
+  movePlayer(playerObj, gameObj.obstacleMap);
 }
 
 function missileEmit(socketId, direction) {

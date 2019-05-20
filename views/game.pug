@@ -2,24 +2,30 @@ extends layout
                                 
 block content
   section.game
-    .main
-      .field-holder
-        canvas#field
-      .score-holder
-        canvas#score
-      .controller-holder
+    .field
+      canvas#field
+    .score
+      canvas#score
+    .controller
+      .holder
         .direction
-          .direction-holder
+          .holder
             .left
-              button#btn-left &larr;
+              button#btn-left
+                i.fas.fa-chevron-left
             .upanddown
-              button#btn-up &uarr;
-              button#btn-down &darr;
+              button#btn-up
+                i.fas.fa-chevron-up
+              button#btn-down
+                i.fas.fa-chevron-down
             .right
-              button#btn-right &rarr;
-        .button
+              button#btn-right
+                i.fas.fa-chevron-right
+        .reset
           a.ui-component(href="/game") Reset
-          button.ui-component#btn-a A
+        .button
+          button#btn-fire
+            i.fas.fa-caret-up
   section.information
     .container
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

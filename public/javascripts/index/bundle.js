@@ -5759,20 +5759,10 @@ var _socket2 = _interopRequireDefault(_socket);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/* ダブルタップによる拡大を禁止 */
-var time = 0;
-document.documentElement.addEventListener('touchend', function (e) {
-  var now = new Date().getTime();
-  if (now - time < 350) {
-    e.preventDefault();
-  }
-  time = now;
-}, false);
-
 var gameObj = {
-  fieldCanvasWidth: 350,
-  fieldCanvasHeight: 350,
-  scoreCanvasWidth: 350,
+  fieldCanvasWidth: 360,
+  fieldCanvasHeight: 360,
+  scoreCanvasWidth: 360,
   scoreCanvasHeight: 100,
   movingDistance: 10,
   itemRadius: 4,
@@ -6297,7 +6287,7 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
     }
     sendChangeDirection(socket, 'right');
   });
-  (0, _jquery2.default)('#btn-a').click(function () {
+  (0, _jquery2.default)('#btn-fire').click(function () {
     if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
 
     gameObj.myPlayerObj.missilesMany -= 1;

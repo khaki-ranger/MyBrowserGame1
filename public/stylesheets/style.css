@@ -1,19 +1,3 @@
-canvas#field {
-  background-color: green;
-}
-canvas#score {
-  background-color: black;
-}
-@media (max-width: 768px) {
-label.ui-component,
-a.ui-component,
-button.ui-component,
-input.ui-component,
-select.ui-component,
-textarea.ui-component {
-  font-size: 16px;
-}
-}
 /* reset */
 img {
   vertical-align: bottom;
@@ -41,6 +25,16 @@ table {
 }
 h1, h2 {
   margin: 0;
+}
+html {
+  touch-action: manipulation;
+}
+@media (max-width: 768px) {
+input,
+select,
+textarea {
+  font-size: 17px;
+}
 }
 /* common */
 body {
@@ -245,58 +239,85 @@ button.ui-component {
 }
 /* game */
 .game {
-  margin-bottom: 1rem;
-  padding-bottom: 10px;
-  background-color: #eee;
-}
-.game .main {
-  width: 350px;
+  width: 360px;
   margin: 0 auto;
 }
-.information h1 {
-  text-align: center;
+.game canvas#field {
+  background-color: green;
+}
+.game canvas#score {
+  background-color: black;
 }
 /* controller */
-.controller-holder {
-  display: table;
-  width: 320px;
-  margin: 10px auto;
+.controller {
+  margin-top: 10px;
 }
-.controller-holder>div {
-  display: table-cell;
-  vertical-align: middle;
-  width: 48%;
-}
-.direction-holder {
+.controller .holder {
   display: table;
   width: 100%;
 }
-.direction-holder>div {
+.controller .holder>div {
   display: table-cell;
   vertical-align: middle;
 }
-.direction-holder .upanddown {
+.controller button,
+.controller a {
+  box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
+  display: block;
+  border: none;
+  border-radius: 18px;
+  background-color: #666;
+  color: white;
+}
+.controller button i {
+  font-size: 20px;
+}
+.controller .direction,
+.controller .button {
+  width: 36%;
+}
+.controller .direction {
+  text-align: left;
+}
+.controller .reset {
+  padding: 0 20px;
   text-align: center;
+  font-weight: bold;
 }
-.direction-holder .upanddown  #btn-up {
-  margin-bottom: .5rem;
-}
-.direction-holder .right {
+.controller .button {
   text-align: right;
 }
-.direction-holder button {
-  display: block;
-  border: solid 1px #ddd;
-  background-color: white;
-  padding: 10px 18px;
-  border-radius: 10px;
+.controller .direction .holder {
+  display: table;
+  width: 100%;
 }
-.controller-holder .button a,
-.controller-holder .button button {
-  background-color: white;
-  border-radius: 8px;
+.controller .direction .holder>div {
+  display: table-cell;
+  vertical-align: middle;
 }
-.controller-holder #btn-a {
-  margin-top: .5rem;
-  border: solid 1px #ddd;
+.controller .direction .holder button {
+  width: 36px;
+  height: 36px;
+}
+.controller .button button {
+  width: 100%;
+  height: 36px;
+}
+.controller .button button i {
+  font-size: 34px;
+}
+.controller .direction .holder .upanddown  #btn-up {
+  margin-bottom: 14px;
+}
+.controller .direction .holder .fa-chevron-left {
+  padding: 2px 1px 0 0;
+}
+.controller .direction .holder .fa-chevron-up {
+  padding: 0 0 0 2px;
+}
+.controller .direction .holder .fa-chevron-down {
+  padding: 5px 0 0 2px;
+}
+.controller .direction .holder .fa-chevron-right {
+  padding: 2px 0 0 6px;
 }

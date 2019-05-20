@@ -20,7 +20,6 @@ const gameObj = {
   movingDistance: 10,
   itemRadius: 4,
   itemPoint: 3,
-  killPoint: 500,
   playerImageWidth: 32
 };
 
@@ -103,7 +102,6 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap) {
     if (playerObj.aliveTime.clock === 30) {
       playerObj.aliveTime.clock = 0;
       playerObj.aliveTime.seconds += 1;
-      playerObj.score += 1;
     }
 
     // アイテムのミサイル（赤丸）
@@ -120,7 +118,6 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap) {
 
         gameObj.itemsMap.delete(itemKey);
         playerObj.missilesMany = playerObj.missilesMany > 5 ? 6 : playerObj.missilesMany + 1;
-        playerObj.score += gameObj.itemPoint;
         addItem();
       }
     }
@@ -142,7 +139,7 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap) {
         // 得点の更新
         if (playersMap.has(flyingMissile.emitPlayerSocketId)) {
           const emitPlayer = playersMap.get(flyingMissile.emitPlayerSocketId);
-          emitPlayer.score += gameObj.killPoint;
+          emitPlayer.killCount += 1;
           playersMap.set(flyingMissile.emitPlayerSocketId, emitPlayer);
         }
 
@@ -200,7 +197,7 @@ function newConnection(socketId, displayName, thumbUrl) {
     missilesMany: 0,
     aliveTime: { 'clock': 0, 'seconds': 0 },
     deadCount: 0,
-    score: 0
+    killCount: 0
   };
   gameObj.playersMap.set(socketId, playerObj);
 
@@ -227,7 +224,8 @@ function getMapData() {
     playerDataForSend.push(plyer.y);
     playerDataForSend.push(plyer.playerId);
     playerDataForSend.push(plyer.displayName);
-    playerDataForSend.push(plyer.score);
+    playerDataForSend.push(plyer.aliveTime.seconds);
+    playerDataForSend.push(plyer.killCount);
     playerDataForSend.push(plyer.isAlive);
     playerDataForSend.push(plyer.direction);
     playerDataForSend.push(plyer.missilesMany);
@@ -353,7 +351,7 @@ function addCOM() {
         missilesMany: 0,
         airTime: 99,
         aliveTime: { 'clock': 0, 'seconds': 0 },
-        score: 0,
+        killCount: 0,
         level: level,
         displayName: 'COM',
         thumbUrl: 'COM',

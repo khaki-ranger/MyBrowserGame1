@@ -85,7 +85,7 @@ function ticker() {
   // スコアの画面を初期化する
   gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
-  drawScore(gameObj.ctxScore, gameObj.myPlayerObj.score);
+  drawScore(gameObj.ctxScore, gameObj.myPlayerObj.aliveTimeSeconds, gameObj.myPlayerObj.killCount);
   drawRanking(gameObj.ctxScore, gameObj.playersMap);
 
   // 撃ち放たれた弾を描画する
@@ -142,25 +142,42 @@ function drawBom(ctxField, drawX, drawY, deadCount) {
 }
 
 function drawMissiles(ctxScore, missilesMany) {
-  for (let i = 1; i <= missilesMany; i++) {
-    ctxScore.drawImage(gameObj.missileImage, gameObj.scoreCanvasWidth - (gameObj.missileCellPx * .75) * i - 10, 4);
+  $('.status .sum-weapon>span').text(missilesMany);
+}
+
+function toHms(t) {
+  var hms = '';
+  var h = t / 3600 | 0;
+  var m = t % 3600 / 60 | 0;
+  var s = t % 60;
+  
+  if (h != 0) {
+    hms = h + ':' + padZero(m) + ':' + padZero(s);
+  } else if (m != 0) {
+    hms = m + ':' + padZero(s);
+  } else {
+    hms = s;
+  }
+  return hms;
+  
+  function padZero(v) {
+    if (v < 10) {
+      return '0' + v;
+    } else {
+      return v;
+    }
   }
 }
 
-function getRadian(kakudo) {
-  return kakudo * Math.PI / 180
-}
-
-function drawScore(ctxScore, score) {
-  ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.font = '14px Verdana';
-  ctxScore.fillText(`score: ${score}`, 10, 24);
+function drawScore(ctxScore, aliveTimeSeconds, killCount) {
+  $('.status .time>span').text(toHms(aliveTimeSeconds));
+  $('.status .kill>span').text(killCount);
 }
 
 function drawRanking(ctxScore, playersMap) {
   const playersArray = [].concat(Array.from(playersMap));
   playersArray.sort(function(a, b) {
-    return b[1].score - a[1].score;
+    return b[1].killCount - a[1].killCount;
   });
 
   ctxScore.fillStyle = "rgb(255, 255, 255)";
@@ -171,10 +188,14 @@ function drawRanking(ctxScore, playersMap) {
 
     const rank = i + 1;
     ctxScore.fillText(
-      `${rank} ${playersArray[i][1].displayName} ${playersArray[i][1].score}`,
+      `${rank} ${playersArray[i][1].displayName} ${playersArray[i][1].killCount}`,
       10, 30 + (rank * 20)
     );
   }
+}
+
+function getRadian(kakudo) {
+  return kakudo * Math.PI / 180
 }
 
 socket.on('start data', (startObj) => {
@@ -198,11 +219,12 @@ socket.on('map data', (compressed) => {
     player.y = compressedPlayerData[1];
     player.playerId = compressedPlayerData[2];
     player.displayName = compressedPlayerData[3];
-    player.score = compressedPlayerData[4];
-    player.isAlive = compressedPlayerData[5];
-    player.direction = compressedPlayerData[6];
-    player.missilesMany = compressedPlayerData[7];
-    player.deadCount = compressedPlayerData[8];
+    player.aliveTimeSeconds = compressedPlayerData[4];
+    player.killCount = compressedPlayerData[5];
+    player.isAlive = compressedPlayerData[6];
+    player.direction = compressedPlayerData[7];
+    player.missilesMany = compressedPlayerData[8];
+    player.deadCount = compressedPlayerData[9];
 
     gameObj.playersMap.set(player.playerId, player);
 
@@ -211,10 +233,11 @@ socket.on('map data', (compressed) => {
       gameObj.myPlayerObj.x = compressedPlayerData[0];
       gameObj.myPlayerObj.y = compressedPlayerData[1];
       gameObj.myPlayerObj.displayName = compressedPlayerData[3];
-      gameObj.myPlayerObj.score = compressedPlayerData[4];
-      gameObj.myPlayerObj.isAlive = compressedPlayerData[5];
-      gameObj.myPlayerObj.missilesMany = compressedPlayerData[7];
-      gameObj.myPlayerObj.deadCount = compressedPlayerData[8];
+      gameObj.myPlayerObj.aliveTimeSeconds = compressedPlayerData[4];
+      gameObj.myPlayerObj.killCount = compressedPlayerData[5];
+      gameObj.myPlayerObj.isAlive = compressedPlayerData[6];
+      gameObj.myPlayerObj.missilesMany = compressedPlayerData[8];
+      gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
     }
   }
 

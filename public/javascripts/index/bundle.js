@@ -5817,7 +5817,7 @@ function init() {
 }
 init();
 
-function ticker() {
+function gameTicker() {
   if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
   // フィールドの画面を初期化する
   gameObj.ctxField.clearRect(0, 0, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
@@ -5831,19 +5831,25 @@ function ticker() {
     drawGameOver(gameObj.ctxField);
   }
 
-  // ステータスの描画
-  drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
-  // ポイントの描画
-  drawScore(gameObj.ctxScore, gameObj.myPlayerObj.aliveTimeSeconds, gameObj.myPlayerObj.killCount);
-  // ランキングの描画
-  drawRanking(gameObj.ctxScore, gameObj.playersMap);
+  // 残弾の描画
+  drawMissiles(gameObj.myPlayerObj.missilesMany);
 
   // 撃ち放たれた弾を描画する
   moveFlyingMissileInClient(gameObj.myPlayerObj, gameObj.flyingMissilesMap);
 
   gameObj.counter = (gameObj.counter + 1) % 10000;
 }
-setInterval(ticker, 33);
+setInterval(gameTicker, 33);
+
+function informationTicker() {
+  if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
+
+  // ポイントの描画
+  drawScore(gameObj.myPlayerObj.aliveTimeSeconds, gameObj.myPlayerObj.killCount);
+  // ランキングの描画
+  drawRanking(gameObj.playersMap);
+}
+setInterval(informationTicker, 1000);
 
 function drawGameOver(ctxField) {
   ctxField.font = 'bold 48px Verdana';
@@ -5879,7 +5885,7 @@ function drawBom(ctxField, drawX, drawY, deadCount) {
   ctxField.drawImage(gameObj.bomListImage, cropX, cropY, gameObj.bomCellPx, gameObj.bomCellPx, drawX - gameObj.bomCellPx / 2, drawY - gameObj.bomCellPx / 2, gameObj.bomCellPx, gameObj.bomCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
 }
 
-function drawMissiles(ctxScore, missilesMany) {
+function drawMissiles(missilesMany) {
   (0, _jquery2.default)('.status .sum-weapon>span').text(missilesMany);
 }
 
@@ -5907,20 +5913,20 @@ function toHms(t) {
   }
 }
 
-function drawScore(ctxScore, aliveTimeSeconds, killCount) {
+function drawScore(aliveTimeSeconds, killCount) {
   (0, _jquery2.default)('.status .time>span').text(toHms(aliveTimeSeconds));
   (0, _jquery2.default)('.status .kill>span').text(killCount);
 }
 
-function drawRanking(ctxScore, playersMap) {
+function drawRanking(playersMap) {
   var playersArray = [].concat(Array.from(playersMap));
   playersArray.sort(function (a, b) {
     return b[1].aliveTimeSeconds - a[1].aliveTimeSeconds;
   });
 
   var rankingTable = '';
-  for (var i = 0; i < 5; i++) {
-    if (!playersArray[i]) return;
+  for (var i = 0; i < playersArray.length; i++) {
+    if (!playersArray[i]) continue;
     var rank = i + 1;
     var time = toHms(playersArray[i][1].aliveTimeSeconds);
     rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + playersArray[i][1].displayName + '</td><td class="time">' + time + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';

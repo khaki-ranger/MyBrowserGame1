@@ -9,19 +9,19 @@ block content
        p #{displayName}
      .kill
        i.fas.fa-user-alt-slash
-       span 999
+       span
      .time
        i.fas.fa-clock
-       span 24:59:59
+       span
      .img-weapon
        img(src="images/missile.png" width="20" height="20")
      .sum-weapon &times;
-       span 6
+       span
   section.game
     .field
       canvas#field
-    .score
-      canvas#score
+    .ranking
+      table#ranking-table
     .controller
       .holder
         .direction
@@ -42,6 +42,4 @@ block content
         .button
           button#btn-fire
             i.fas.fa-caret-up
-  section.information
-    .container
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

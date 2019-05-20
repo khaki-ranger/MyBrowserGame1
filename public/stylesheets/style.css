@@ -241,12 +241,15 @@ button.ui-component {
 .game {
   width: 360px;
   margin: 0 auto;
+  position: relative;
 }
 .game canvas#field {
   background-color: green;
 }
-.game canvas#score {
-  background-color: black;
+.status .holder>div>span,
+.game .ranking table td.rank,
+.game .ranking table td.kill {
+  font-family: "Courier New", Consolas, monospace;
 }
 /* controller */
 .controller {
@@ -356,7 +359,6 @@ button.ui-component {
 }
 .status .holder>div>span {
   padding-left: 5px;
-  font-family: "Courier New", Consolas, monospace;
 }
 .status .holder .time {
   width: 80px;
@@ -366,5 +368,25 @@ button.ui-component {
 }
 .status .holder .img-weapon,
 .status .holder .sum-weapon {
+  text-align: right;
+}
+/* ranking */
+.game .ranking {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: rgba(255, 255, 255, .4);
+  padding: 6px;
+  font-size: .7rem;
+}
+.game .ranking table td {
+  vertical-align: middle;
+}
+.game .ranking table td.rank,
+.game .ranking table td.name {
+  text-align: left;
+  padding-right: 5px;
+}
+.game .ranking table td.kill {
   text-align: right;
 }

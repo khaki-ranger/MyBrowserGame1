@@ -5762,8 +5762,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var gameObj = {
   fieldCanvasWidth: 360,
   fieldCanvasHeight: 360,
-  scoreCanvasWidth: 360,
-  scoreCanvasHeight: 100,
   movingDistance: 10,
   itemRadius: 4,
   playerCellPx: 32,
@@ -5796,12 +5794,6 @@ function init() {
   fieldCanvas.width = gameObj.fieldCanvasWidth;
   fieldCanvas.height = gameObj.fieldCanvasHeight;
   gameObj.ctxField = fieldCanvas.getContext('2d');
-
-  // ランキング用のキャンバス
-  var scoreCanvas = (0, _jquery2.default)('#score')[0];
-  scoreCanvas.width = gameObj.scoreCanvasWidth;
-  scoreCanvas.height = gameObj.scoreCanvasHeight;
-  gameObj.ctxScore = scoreCanvas.getContext('2d');
 
   // プレイヤーの画像
   gameObj.playerImage = new Image();
@@ -5839,10 +5831,11 @@ function ticker() {
     drawGameOver(gameObj.ctxField);
   }
 
-  // スコアの画面を初期化する
-  gameObj.ctxScore.clearRect(0, 0, gameObj.scoreCanvasWidth, gameObj.scoreCanvasHeight);
+  // ステータスの描画
   drawMissiles(gameObj.ctxScore, gameObj.myPlayerObj.missilesMany);
+  // ポイントの描画
   drawScore(gameObj.ctxScore, gameObj.myPlayerObj.aliveTimeSeconds, gameObj.myPlayerObj.killCount);
+  // ランキングの描画
   drawRanking(gameObj.ctxScore, gameObj.playersMap);
 
   // 撃ち放たれた弾を描画する
@@ -5925,15 +5918,13 @@ function drawRanking(ctxScore, playersMap) {
     return b[1].killCount - a[1].killCount;
   });
 
-  ctxScore.fillStyle = "rgb(255, 255, 255)";
-  ctxScore.font = '12px Verdana';
-
-  for (var i = 0; i < 3; i++) {
+  var rankingTable = '';
+  for (var i = 0; i < 5; i++) {
     if (!playersArray[i]) return;
-
     var rank = i + 1;
-    ctxScore.fillText(rank + ' ' + playersArray[i][1].displayName + ' ' + playersArray[i][1].killCount, 10, 30 + rank * 20);
+    rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + playersArray[i][1].displayName + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';
   }
+  (0, _jquery2.default)('#ranking-table').html(rankingTable);
 }
 
 function getRadian(kakudo) {

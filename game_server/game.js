@@ -20,7 +20,8 @@ const gameObj = {
   movingDistance: 10,
   itemRadius: 4,
   itemPoint: 3,
-  playerImageWidth: 32
+  playerImageWidth: 32,
+  obstacleImageWidth: 32
 };
 
 function init() {
@@ -37,7 +38,7 @@ const gameTicker = setInterval(() => {
   COMMoveDecision(gameObj.COMMap); // COM の行動選択
   const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
   moveMissile(gameObj.flyingMissilesMap);
-  checkGetItem(playersAndCOMMap, gameObj.itemsMap, gameObj.flyingMissilesMap); // アイテムの取得チェック
+  checkGetItem(playersAndCOMMap, gameObj.itemsMap, gameObj.flyingMissilesMap, gameObj.obstacleMap); // 当たり判定
   addCOM();
 }, 33);
 
@@ -85,7 +86,23 @@ function movePlayer(player) {
   if (player.y > gameObj.fieldHeight) player.y -= gameObj.fieldHeight;
 }
 
-function checkGetItem(playersMap, itemsMap, flyingMissilesMap) {
+function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
+  for (let [obstacleId, obstacleObj] of obstacleMap) {
+    for (let [missileId, flyingMissile] of flyingMissilesMap) {
+
+      const distanceObj = calculationBetweenTwoPoints(
+        obstacleObj.x, obstacleObj.y, flyingMissile.x, flyingMissile.y, gameObj.fieldWidth, gameObj.fieldHeight
+      );
+
+      if (
+        distanceObj.distanceX <= (gameObj.obstacleImageWidth / 2 + gameObj.missileWidth / 2) &&
+        distanceObj.distanceY <= (gameObj.obstacleImageWidth / 2 + gameObj.missileHeight / 2)
+      ) {
+        flyingMissilesMap.delete(missileId); // ミサイルの削除
+      }
+    }
+  }
+
   for (let [hashKey, playerObj] of playersMap) {
 
     if (playerObj.isAlive === false) {

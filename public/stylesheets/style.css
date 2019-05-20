@@ -241,12 +241,15 @@ button.ui-component {
 .game {
   width: 360px;
   margin: 0 auto;
+  position: relative;
 }
 .game canvas#field {
   background-color: green;
 }
-.game canvas#score {
-  background-color: black;
+.status .holder>div>span,
+.game .ranking table td.rank,
+.game .ranking table td.kill {
+  font-family: "Courier New", Consolas, monospace;
 }
 /* controller */
 .controller {
@@ -260,32 +263,9 @@ button.ui-component {
   display: table-cell;
   vertical-align: middle;
 }
-.controller button,
-.controller a {
-  box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
-  display: block;
-  border: none;
-  border-radius: 18px;
-  background-color: #666;
-  color: white;
-}
-.controller button i {
-  font-size: 20px;
-}
-.controller .direction,
-.controller .button {
-  width: 36%;
-}
 .controller .direction {
+  width: 120px;
   text-align: left;
-}
-.controller .reset {
-  padding: 0 20px;
-  text-align: center;
-  font-weight: bold;
-}
-.controller .button {
-  text-align: right;
 }
 .controller .direction .holder {
   display: table;
@@ -295,29 +275,118 @@ button.ui-component {
   display: table-cell;
   vertical-align: middle;
 }
-.controller .direction .holder button {
-  width: 36px;
-  height: 36px;
+.controller .direction .btn {
+  padding: 0;
+  box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  width: 31px;
+  height: 31px;
+}
+.controller .direction .btn i {
+  font-size: 32px;
+  color: #666;
+}
+.controller .button {
+  width: 36%;
+}
+.controller .button button,
+.controller .reset a {
+  box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
+  display: block;
+  border: none;
+  border-radius: 18px;
+  background-color: #666;
+  color: white;
+  height: 32px;
+}
+.controller .reset {
+  padding: 0 20px;
+  text-align: center;
+  font-weight: bold;
+}
+.controller .button {
+  text-align: right;
 }
 .controller .button button {
   width: 100%;
-  height: 36px;
 }
 .controller .button button i {
-  font-size: 34px;
+  font-size: 30px;
 }
 .controller .direction .holder .upanddown  #btn-up {
   margin-bottom: 14px;
 }
-.controller .direction .holder .fa-chevron-left {
-  padding: 2px 1px 0 0;
+/* status */
+.status {
+  background-color: black;
+  width: 360px;
+  margin: 0 auto;
+  color: white;
+  padding: 8px 0;
 }
-.controller .direction .holder .fa-chevron-up {
-  padding: 0 0 0 2px;
+.status .holder {
+  display: table;
+  width: 100%;
 }
-.controller .direction .holder .fa-chevron-down {
-  padding: 5px 0 0 2px;
+.status .holder>div {
+  display: table-cell;
+  vertical-align: middle;
 }
-.controller .direction .holder .fa-chevron-right {
-  padding: 2px 0 0 6px;
+.status .holder>div:first-child {
+  padding-left: 10px;
+}
+.status .holder>div:last-child {
+  padding-right: 10px;
+  width: 20px;
+}
+.status .holder .thum {
+  width: 28px;
+}
+.status .holder .thum img {
+  width: 24px;
+  height: 24px;
+  border-radius: 30px;
+  border: solid 2px white;
+}
+.status .holder .username {
+  text-align: left;
+  padding-left: 10px;
+}
+.status .holder .kill,
+.status .holder .time {
+  text-align: right;
+  padding-right: 10px;
+}
+.status .holder>div>span {
+  padding-left: 5px;
+}
+.status .holder .time {
+  width: 80px;
+}
+.status .holder .img-weapon {
+  width: 20px;
+}
+.status .holder .img-weapon,
+.status .holder .sum-weapon {
+  text-align: right;
+}
+/* ranking */
+.game .ranking {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: rgba(255, 255, 255, .4);
+  padding: 6px;
+  font-size: .7rem;
+}
+.game .ranking table td {
+  vertical-align: middle;
+}
+.game .ranking table td.rank,
+.game .ranking table td.name {
+  text-align: left;
+  padding-right: 5px;
+}
+.game .ranking table td.kill {
+  text-align: right;
 }

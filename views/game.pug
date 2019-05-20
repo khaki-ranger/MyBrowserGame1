@@ -1,31 +1,45 @@
 extends layout
                                 
 block content
+  section.status
+   .holder
+     .thum
+       img(src=`${thumbUrl}`)
+     .username
+       p #{displayName}
+     .kill
+       i.fas.fa-user-alt-slash
+       span
+     .time
+       i.fas.fa-clock
+       span
+     .img-weapon
+       img(src="images/missile.png" width="20" height="20")
+     .sum-weapon &times;
+       span
   section.game
     .field
       canvas#field
-    .score
-      canvas#score
+    .ranking
+      table#ranking-table
     .controller
       .holder
         .direction
           .holder
             .left
-              button#btn-left
-                i.fas.fa-chevron-left
+              .btn#btn-left
+                i.fas.fa-chevron-circle-left
             .upanddown
-              button#btn-up
-                i.fas.fa-chevron-up
-              button#btn-down
-                i.fas.fa-chevron-down
+              .btn#btn-up
+                i.fas.fa-chevron-circle-up
+              .btn#btn-down
+                i.fas.fa-chevron-circle-down
             .right
-              button#btn-right
-                i.fas.fa-chevron-right
+              .btn#btn-right
+                i.fas.fa-chevron-circle-right
         .reset
           a.ui-component(href="/game") Reset
         .button
           button#btn-fire
             i.fas.fa-caret-up
-  section.information
-    .container
   script#main(src="/javascripts/index/bundle.js", data-displayName=`${displayName}`, data-thumbUrl=`${thumbUrl}`, data-ipAddress=`${ipAddress}`)

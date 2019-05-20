@@ -5915,14 +5915,15 @@ function drawScore(ctxScore, aliveTimeSeconds, killCount) {
 function drawRanking(ctxScore, playersMap) {
   var playersArray = [].concat(Array.from(playersMap));
   playersArray.sort(function (a, b) {
-    return b[1].killCount - a[1].killCount;
+    return b[1].aliveTimeSeconds - a[1].aliveTimeSeconds;
   });
 
   var rankingTable = '';
   for (var i = 0; i < 5; i++) {
     if (!playersArray[i]) return;
     var rank = i + 1;
-    rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + playersArray[i][1].displayName + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';
+    var time = toHms(playersArray[i][1].aliveTimeSeconds);
+    rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + playersArray[i][1].displayName + '</td><td class="time">' + time + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';
   }
   (0, _jquery2.default)('#ranking-table').html(rankingTable);
 }

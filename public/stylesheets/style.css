@@ -248,7 +248,8 @@ button.ui-component {
 }
 .status .holder>div>span,
 .game .ranking table td.rank,
-.game .ranking table td.kill {
+.game .ranking table td.kill,
+.game .ranking table td.time {
   font-family: "Courier New", Consolas, monospace;
 }
 /* controller */
@@ -363,6 +364,9 @@ button.ui-component {
 .status .holder .time {
   width: 80px;
 }
+.status .holder .kill {
+  width: 60px;
+}
 .status .holder .img-weapon {
   width: 20px;
 }
@@ -385,8 +389,17 @@ button.ui-component {
 .game .ranking table td.rank,
 .game .ranking table td.name {
   text-align: left;
+}
+.game .ranking table td.rank,
+.game .ranking table td.name,
+.game .ranking table td.kill,
+.game .ranking table td.time {
   padding-right: 5px;
 }
-.game .ranking table td.kill {
+.game .ranking table td.kill,
+.game .ranking table td.time {
   text-align: right;
+}
+.game .ranking table td:last-child {
+  padding: 0;
 }

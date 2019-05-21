@@ -96,12 +96,7 @@ function informationTicker() {
 setInterval(informationTicker, 1000);
 
 function drawGameOver(ctxField) {
-  ctxField.font = 'bold 48px Verdana';
-  ctxField.fillStyle = "rgb(0, 220, 250)";
-  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
-  ctxField.strokeStyle = "rgb(0, 0, 0)";
-  ctxField.lineWidth = 3;
-  ctxField.strokeText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
+  $('.gameover').addClass('visible');
 }
 
 function drawPlayer(ctxField, myPlayerObj) {

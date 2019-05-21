@@ -52,7 +52,7 @@ function COMMoveDecision(COMMap) {
         if (Math.floor(Math.random() * 60) === 1) {
           COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
         }
-        if (COMObj.missilesMany > 0 && Math.floor(Math.random() * 90) === 1) {
+        if (COMObj.missilesMany > 0 && Math.floor(Math.random() * 180) === 1) {
           missileEmit(COMObj.playerId, COMObj.direction);
         }
         break;

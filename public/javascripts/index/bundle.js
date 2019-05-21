@@ -5799,9 +5799,13 @@ function init() {
   gameObj.playerImage = new Image();
   gameObj.playerImage.src = '/images/player.png';
 
-  // 敵キャラの画像
-  gameObj.enemyImage = new Image();
-  gameObj.enemyImage.src = '/images/player.png';
+  // 市民の画像
+  gameObj.leval1Image = new Image();
+  gameObj.leval1Image.src = '/images/player.png';
+
+  // ギャングの画像
+  gameObj.leval2Image = new Image();
+  gameObj.leval2Image.src = '/images/level2.png';
 
   // 障害物の画像
   gameObj.obstacleImage = new Image();
@@ -5852,12 +5856,7 @@ function informationTicker() {
 setInterval(informationTicker, 1000);
 
 function drawGameOver(ctxField) {
-  ctxField.font = 'bold 48px Verdana';
-  ctxField.fillStyle = "rgb(0, 220, 250)";
-  ctxField.fillText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
-  ctxField.strokeStyle = "rgb(0, 0, 0)";
-  ctxField.lineWidth = 3;
-  ctxField.strokeText('Game Over', gameObj.fieldCanvasWidth / 2, gameObj.fieldCanvasHeight / 2 + 10);
+  (0, _jquery2.default)('.gameover').addClass('visible');
 }
 
 function drawPlayer(ctxField, myPlayerObj) {
@@ -5972,6 +5971,7 @@ socket.on('map data', function (compressed) {
       player.direction = compressedPlayerData[7];
       player.missilesMany = compressedPlayerData[8];
       player.deadCount = compressedPlayerData[9];
+      player.level = compressedPlayerData[10];
 
       gameObj.playersMap.set(player.playerId, player);
 
@@ -5985,6 +5985,7 @@ socket.on('map data', function (compressed) {
         gameObj.myPlayerObj.isAlive = compressedPlayerData[6];
         gameObj.myPlayerObj.missilesMany = compressedPlayerData[8];
         gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
+        gameObj.myPlayerObj.level = compressedPlayerData[10];
       }
     }
   } catch (err) {
@@ -6056,7 +6057,9 @@ function drawMap(gameObj) {
         gameObj.ctxField.save();
         gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
-        gameObj.ctxField.drawImage(gameObj.enemyImage, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
+        var image = tekiPlayerObj.level !== 1 ? gameObj.leval2Image : gameObj.leval1Image;
+
+        gameObj.ctxField.drawImage(image, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
 
         gameObj.ctxField.restore();
 
@@ -6279,105 +6282,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
   return degree;
 }
 
-(0, _jquery2.default)(window).on('load', function () {
-  (0, _jquery2.default)('#btn-left').click(function () {
-    if (gameObj.myPlayerObj.direction !== 'left') {
-      gameObj.myPlayerObj.direction = 'left';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'left');
-  });
-  (0, _jquery2.default)('#btn-up').click(function () {
-    if (gameObj.myPlayerObj.direction !== 'up') {
-      gameObj.myPlayerObj.direction = 'up';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'up');
-  });
-  (0, _jquery2.default)('#btn-down').click(function () {
-    if (gameObj.myPlayerObj.direction !== 'down') {
-      gameObj.myPlayerObj.direction = 'down';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'down');
-  });
-  (0, _jquery2.default)('#btn-right').click(function () {
-    if (gameObj.myPlayerObj.direction !== 'right') {
-      gameObj.myPlayerObj.direction = 'right';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'right');
-  });
-  (0, _jquery2.default)('#btn-fire').click(function () {
-    if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
-
-    gameObj.myPlayerObj.missilesMany -= 1;
-    var missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
-
-    var missileObj = {
-      emitPlayerId: gameObj.myPlayerObj.playerId,
-      x: gameObj.myPlayerObj.x,
-      y: gameObj.myPlayerObj.y,
-      direction: gameObj.myPlayerObj.direction,
-      id: missileId
-    };
-    gameObj.flyingMissilesMap.set(missileId, missileObj);
-    sendMissileEmit(socket, gameObj.myPlayerObj.direction);
-  });
-});
-
-(0, _jquery2.default)(window).keydown(function (event) {
-  if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
-
-  switch (event.key) {
-    case 'ArrowLeft':
-      if (gameObj.myPlayerObj.direction !== 'left') {
-        gameObj.myPlayerObj.direction = 'left';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'left');
-      break;
-    case 'ArrowUp':
-      if (gameObj.myPlayerObj.direction !== 'up') {
-        gameObj.myPlayerObj.direction = 'up';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'up');
-      break;
-    case 'ArrowDown':
-      if (gameObj.myPlayerObj.direction !== 'down') {
-        gameObj.myPlayerObj.direction = 'down';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'down');
-      break;
-    case 'ArrowRight':
-      if (gameObj.myPlayerObj.direction !== 'right') {
-        gameObj.myPlayerObj.direction = 'right';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'right');
-      break;
-    case ' ':
-      // スペースキー
-      if (gameObj.myPlayerObj.missilesMany <= 0) break; // ミサイルのストックが 0
-
-      gameObj.myPlayerObj.missilesMany -= 1;
-      var missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
-
-      var missileObj = {
-        emitPlayerId: gameObj.myPlayerObj.playerId,
-        x: gameObj.myPlayerObj.x,
-        y: gameObj.myPlayerObj.y,
-        direction: gameObj.myPlayerObj.direction,
-        id: missileId
-      };
-      gameObj.flyingMissilesMap.set(missileId, missileObj);
-      sendMissileEmit(socket, gameObj.myPlayerObj.direction);
-      break;
-  }
-});
-
 function sendChangeDirection(socket, direction) {
   socket.emit('change direction', direction);
 }
@@ -6449,6 +6353,71 @@ function moveFlyingMissileInClient(myPlayerObj, flyingMissilesMap) {
     myPlayerObj.aliveTime.seconds += 1;
   }
 }
+
+function touchDirectionButtonAction(direction) {
+  if (gameObj.myPlayerObj.direction !== direction) {
+    gameObj.myPlayerObj.direction = direction;
+    drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+  }
+  sendChangeDirection(socket, direction);
+}
+
+function touchEmitButtonAction() {
+  if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
+
+  gameObj.myPlayerObj.missilesMany -= 1;
+  var missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
+
+  var missileObj = {
+    emitPlayerId: gameObj.myPlayerObj.playerId,
+    x: gameObj.myPlayerObj.x,
+    y: gameObj.myPlayerObj.y,
+    direction: gameObj.myPlayerObj.direction,
+    id: missileId
+  };
+  gameObj.flyingMissilesMap.set(missileId, missileObj);
+  sendMissileEmit(socket, gameObj.myPlayerObj.direction);
+}
+
+(0, _jquery2.default)(window).on('load', function () {
+  (0, _jquery2.default)('#btn-left').click(function () {
+    touchDirectionButtonAction('left');
+  });
+  (0, _jquery2.default)('#btn-up').click(function () {
+    touchDirectionButtonAction('up');
+  });
+  (0, _jquery2.default)('#btn-down').click(function () {
+    touchDirectionButtonAction('down');
+  });
+  (0, _jquery2.default)('#btn-right').click(function () {
+    touchDirectionButtonAction('right');
+  });
+  (0, _jquery2.default)('#btn-fire').click(function () {
+    touchEmitButtonAction();
+  });
+  (0, _jquery2.default)(window).keydown(function (event) {
+    if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        touchDirectionButtonAction('left');
+        break;
+      case 'ArrowUp':
+        touchDirectionButtonAction('up');
+        break;
+      case 'ArrowDown':
+        touchDirectionButtonAction('down');
+        break;
+      case 'ArrowRight':
+        touchDirectionButtonAction('right');
+        break;
+      case ' ':
+        // スペースキー
+        touchEmitButtonAction();
+        break;
+    }
+  });
+});
 
 /***/ }),
 /* 26 */

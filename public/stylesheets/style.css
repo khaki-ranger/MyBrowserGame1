@@ -245,6 +245,8 @@ button.ui-component {
 }
 .game canvas#field {
   background-color: green;
+  width: 360px;
+  height: 360px;
 }
 .status .holder>div>span,
 .game .ranking table td.rank,
@@ -402,4 +404,47 @@ button.ui-component {
 }
 .game .ranking table td:last-child {
   padding: 0;
+}
+/* gameover */
+.gameover {
+  transition: all 1s;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  height: 360px;
+  left: 0;
+  right: 0;
+  width: 320px;
+  margin: 0 auto;
+}
+.gameover.visible {
+  opacity: 1;
+}
+.gameover table {
+  width: 100%;
+  height: 100%;
+}
+.gameover table td {
+  text-align: center;
+}
+.gameover table .upper td {
+  vertical-align: bottom;
+}
+.gameover table .upper td {
+  font-size: 4rem;
+  color: white;
+  text-shadow: #000 2px 2px 0px, #000 -2px 2px 0px, #000 2px -2px 0px, #000 -2px -2px 0px;
+}
+.gameover table .bottom td {
+  vertical-align: top;
+  width: 50%;
+}
+.gameover table .bottom td:first-child {
+  padding-right: 5px;
+}
+.gameover table .bottom td:last-child {
+  padding-left: 5px;
+}
+.gameover table .bottom td a {
+  background-color: rgba(255, 255, 255, .5);
 }

@@ -22,6 +22,15 @@ block content
       canvas#field
     .ranking
       table#ranking-table
+    .gameover
+      table
+        tr.upper
+          td(colspan="2") Game Over
+        tr.bottom
+          td
+            a.ui-component(href="/game") 再チャレンジ
+          td
+            a.ui-component(href="/") トップページに戻る
     .controller
       .holder
         .direction

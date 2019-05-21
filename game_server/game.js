@@ -7,7 +7,7 @@ const gameObj = {
   COMMap: new Map(),
   obstacleMap: new Map(),
   flyingMissilesMap: new Map(),
-  addingCOMPlayerNum: 9,
+  addingCOMPlayerNum: 10,
   missileAliveFlame: 180,
   missileSpeed: 3,
   missileWidth: 30,
@@ -15,6 +15,8 @@ const gameObj = {
   directions: ['left', 'up', 'down', 'right'],
   fieldWidth: 1000,
   fieldHeight: 1000,
+  fieldCanvasWidth: 500, 
+  fieldCanvasHeight: 500, 
   itemTotal: 30,
   obstacleTotal: 15,
   movingDistance: 10,
@@ -41,86 +43,102 @@ const gameTicker = setInterval(() => {
   addCOM();
 }, 33);
 
+function checkInSameline(COMObj) {
+  const playersAndCOMMap = new Map(Array.from(gameObj.playersMap).concat(Array.from(gameObj.COMMap)));
+  for (let [playerId, playerObj] of playersAndCOMMap ) {
+    if (COMObj.playerId === playerId) { continue; }
+    const distanceObj = calculationBetweenTwoPoints(
+      COMObj.x, COMObj.y, playerObj.x, playerObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+    )
+    if (
+      distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 &&
+      distanceObj.distanceY <= gameObj.missileHeight / 2
+    ) {
+      return distanceObj.directionX;
+      break;
+    } else if (
+      distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2 &&
+      distanceObj.distanceX <= gameObj.missileWidth / 2
+    ) {
+      return distanceObj.directionY;
+      break;
+    }
+  }
+  return false;
+}
+
 function COMMoveDecision(COMMap) {
   for (let [COMId, COMObj] of COMMap) {
 
     switch (COMObj.level) {
       case 1:
         if (Math.floor(Math.random() * 10) === 1) {
-          movePlayer(COMObj, gameObj.obstacleMap);
+          movePlayer(COMObj);
         }
         if (Math.floor(Math.random() * 60) === 1) {
           COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
         }
-        if (COMObj.missilesMany > 0 && Math.floor(Math.random() * 90) === 1) {
+        if (COMObj.missilesMany > 0 && Math.floor(Math.random() * 180) === 1) {
           missileEmit(COMObj.playerId, COMObj.direction);
         }
         break;
       case 2:
+        if (Math.floor(Math.random() * 10) === 1) {
+          movePlayer(COMObj);
+        }
+        if (Math.floor(Math.random() * 60) === 1) {
+          COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
+        }
+        if (COMObj.missilesMany > 0 && checkInSameline(COMObj)) {
+          COMObj.direction = checkInSameline(COMObj)
+          missileEmit(COMObj.playerId, COMObj.direction);
+        }
+        break;
       case 3:
     }
   }
 }
 
-function movePlayer(player, obstacleMap) {
+// プレイヤーと障害物の当たり判定
+function checkCollisionWithObstacle(destinationX, destinationY) {
+  for (let [obstacleId, obstacleObj] of gameObj.obstacleMap) {
+    const distanceObj = calculationBetweenTwoPoints(
+      destinationX, destinationY, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
+    )
+    if (
+      distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
+      distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
+    ) {
+      return true;
+      break;
+    }
+  }
+  return false;
+}
+
+function movePlayer(player) {
   if (player.isAlive === false) return;
 
   switch (player.direction) {
     case 'left':
-      for (let [obstacleId, obstacleObj] of obstacleMap) {
-        const distanceObj = calculationBetweenTwoPoints(
-          player.x - gameObj.movingDistance, player.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
-        )
-        if (
-          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
-          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
-        ) {
-          return;
-        }
-      }
-      player.x -= gameObj.movingDistance;
+      if(!checkCollisionWithObstacle(player.x - gameObj.movingDistance, player.y)) {
+        player.x -= gameObj.movingDistance;
+      } 
       break;
     case 'up':
-      for (let [obstacleId, obstacleObj] of obstacleMap) {
-        const distanceObj = calculationBetweenTwoPoints(
-          player.x, player.y - gameObj.movingDistance, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
-        )
-        if (
-          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
-          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
-        ) {
-          return;
-        }
-      }
-      player.y -= gameObj.movingDistance;
+      if(!checkCollisionWithObstacle(player.x, player.y - gameObj.movingDistance)) {
+        player.y -= gameObj.movingDistance;
+      } 
       break;
     case 'down':
-      for (let [obstacleId, obstacleObj] of obstacleMap) {
-        const distanceObj = calculationBetweenTwoPoints(
-          player.x, player.y + gameObj.movingDistance, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
-        )
-        if (
-          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
-          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
-        ) {
-          return;
-        }
-      }
-      player.y += gameObj.movingDistance;
+      if(!checkCollisionWithObstacle(player.x, player.y + gameObj.movingDistance)) {
+        player.y += gameObj.movingDistance;
+      } 
       break;
     case 'right':
-      for (let [obstacleId, obstacleObj] of obstacleMap) {
-        const distanceObj = calculationBetweenTwoPoints(
-          player.x + gameObj.movingDistance, player.y, obstacleObj.x, obstacleObj.y, gameObj.fieldWidth, gameObj.fieldHeight
-        )
-        if (
-          distanceObj.distanceX <= (gameObj.obstacleImageWidth / 4 + gameObj.playerImageWidth  / 4) &&
-          distanceObj.distanceY <= (gameObj.obstacleImageWidth / 5 + gameObj.playerImageWidth / 5)
-        ) {
-          return;
-        }
-      }
-      player.x += gameObj.movingDistance;
+      if(!checkCollisionWithObstacle(player.x + gameObj.movingDistance, player.y)) {
+        player.x += gameObj.movingDistance;
+      } 
       break;
   }
   if (player.x > gameObj.fieldWidth) player.x -= gameObj.fieldWidth;
@@ -131,7 +149,7 @@ function movePlayer(player, obstacleMap) {
 
 function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
 
-  // 弾と障害物の当たり判定
+  // 障害物と弾の当たり判定
   for (let [obstacleId, obstacleObj] of obstacleMap) {
     for (let [missileId, flyingMissile] of flyingMissilesMap) {
 
@@ -148,7 +166,7 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
     }
   }
 
-  // プレイヤーの当たり判定
+  // プレイヤーと各要素の当たり判定
   for (let [hashKey, playerObj] of playersMap) {
 
     if (playerObj.isAlive === false) {
@@ -211,7 +229,8 @@ function checkGetItem(playersMap, itemsMap, flyingMissilesMap, obstacleMap) {
   }
 }
 
-function moveMissile(flyingMissilesMap) { // ミサイルの移動
+// ミサイルの移動
+function moveMissile(flyingMissilesMap) {
   for (let [missileId, flyingMissile] of flyingMissilesMap) {
     const missile = flyingMissile;
 
@@ -259,7 +278,8 @@ function newConnection(socketId, displayName, thumbUrl) {
     missilesMany: 0,
     aliveTime: { 'clock': 0, 'seconds': 0 },
     deadCount: 0,
-    killCount: 0
+    killCount: 0,
+    level: 1
   };
   gameObj.playersMap.set(socketId, playerObj);
 
@@ -272,6 +292,7 @@ function newConnection(socketId, displayName, thumbUrl) {
   return startObj;
 }
 
+// クライアントの渡すためのデータ群を生成
 function getMapData() {
   const playersArray = [];
   const itemsArray = [];
@@ -292,6 +313,7 @@ function getMapData() {
     playerDataForSend.push(plyer.direction);
     playerDataForSend.push(plyer.missilesMany);
     playerDataForSend.push(plyer.deadCount);
+    playerDataForSend.push(plyer.level);
 
     playersArray.push(playerDataForSend);
   }
@@ -331,7 +353,7 @@ function getMapData() {
 function updatePlayerDirection(socketId, direction) {
   const playerObj = gameObj.playersMap.get(socketId);
   playerObj.direction = direction;
-  movePlayer(playerObj, gameObj.obstacleMap);
+  movePlayer(playerObj);
 }
 
 function missileEmit(socketId, direction) {
@@ -362,36 +384,34 @@ function disconnect(socketId) {
   gameObj.playersMap.delete(socketId);
 }
 
-function addItem() {
-  const itemX = Math.floor(Math.random() * gameObj.fieldWidth);
-  const itemY = Math.floor(Math.random() * gameObj.fieldHeight);
-  const itemKey = `${itemX},${itemY}`;
+function setElementsPosition() {
+  const elementX = Math.floor(Math.random() * gameObj.fieldWidth);
+  const elementY = Math.floor(Math.random() * gameObj.fieldHeight);
+  const elementKey = `${elementX},${elementY}`;
 
-  if (gameObj.itemsMap.has(itemKey)) { // アイテムの位置が被ってしまった場合は
-    return addItem(); // 場所が重複した場合は作り直し
+  if (gameObj.obstacleMap.has(elementKey) || gameObj.itemsMap.has(elementKey)) {
+    return setElementsPosition(); // 場所が重複した場合は作り直し
   }
-
-  const itemObj = {
-    x: itemX,
-    y: itemY,
+  
+  const elementObj = {
+    x: elementX,
+    y: elementY,
   };
-  gameObj.itemsMap.set(itemKey, itemObj);
+  const returnObj = {
+    elementKey: elementKey,
+    elementObj: elementObj
+  };
+  return returnObj;
+}
+
+function addItem() {
+  const element = setElementsPosition();
+  gameObj.itemsMap.set(element.elementKey, element.elementObj);
 }
 
 function addObstacle() {
-  const obstacleX = Math.floor(Math.random() * gameObj.fieldWidth);
-  const obstacleY = Math.floor(Math.random() * gameObj.fieldHeight);
-  const obstacleKey = `${obstacleX},${obstacleY}`;
-
-  if (gameObj.obstacleMap.has(obstacleKey)) { // アイテムの位置が被ってしまった場合は
-    return addObstacle(); // 場所が重複した場合は作り直し
-  }
-
-  const obstacleObj = {
-    x: obstacleX,
-    y: obstacleY,
-  };
-  gameObj.obstacleMap.set(obstacleKey, obstacleObj);
+  const element = setElementsPosition();
+  gameObj.obstacleMap.set(element.elementKey, element.elementObj);
 }
 
 function addCOM() {
@@ -402,7 +422,9 @@ function addCOM() {
 
       const playerX = Math.floor(Math.random() * gameObj.fieldWidth);
       const playerY = Math.floor(Math.random() * gameObj.fieldHeight);
-      const level = Math.floor(Math.random() * 1) + 1;
+      const rnd = Math.floor(Math.random() * 10);
+      const level = rnd >= 7 ? 2 : 1;
+      const displayName = level === 1 ? '市民' : 'ギャング';
       const id = Math.floor(Math.random() * 100000) + ',' + playerX + ',' + playerY + ',' + level;
       const playerObj = {
         x: playerX,
@@ -415,8 +437,8 @@ function addCOM() {
         aliveTime: { 'clock': 0, 'seconds': 0 },
         killCount: 0,
         level: level,
-        displayName: 'COM',
-        thumbUrl: 'COM',
+        displayName: displayName,
+        thumbUrl: 'images/anonymouse.jpg',
         playerId: id
       };
       gameObj.COMMap.set(id, playerObj);
@@ -427,6 +449,8 @@ function addCOM() {
 function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
   let distanceX = 99999999;
   let distanceY = 99999999;
+  let directionX = 'left';
+  let directionY = 'up';
 
   if (pX <= oX) {
     // 右から
@@ -436,7 +460,7 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceX > tmpDistance) {
       distanceX = tmpDistance;
     }
-
+    directionX = 'right';
   } else {
     // 右から
     distanceX = pX - oX;
@@ -445,6 +469,7 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceX > tmpDistance) {
       distanceX = tmpDistance;
     }
+    directionX = 'left';
   }
 
   if (pY <= oY) {
@@ -455,7 +480,7 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceY > tmpDistance) {
       distanceY = tmpDistance;
     }
-
+    directionY = 'down';
   } else {
     // 上から
     distanceY = pY - oY;
@@ -464,11 +489,14 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceY > tmpDistance) {
       distanceY = tmpDistance;
     }
+    directionY = 'up';
   }
 
   return {
     distanceX,
-    distanceY
+    distanceY,
+    directionX,
+    directionY
   };
 }
 

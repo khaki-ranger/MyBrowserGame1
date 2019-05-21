@@ -5799,9 +5799,13 @@ function init() {
   gameObj.playerImage = new Image();
   gameObj.playerImage.src = '/images/player.png';
 
-  // 敵キャラの画像
-  gameObj.enemyImage = new Image();
-  gameObj.enemyImage.src = '/images/player.png';
+  // 市民の画像
+  gameObj.leval1Image = new Image();
+  gameObj.leval1Image.src = '/images/player.png';
+
+  // ギャングの画像
+  gameObj.leval2Image = new Image();
+  gameObj.leval2Image.src = '/images/level2.png';
 
   // 障害物の画像
   gameObj.obstacleImage = new Image();
@@ -5967,6 +5971,7 @@ socket.on('map data', function (compressed) {
       player.direction = compressedPlayerData[7];
       player.missilesMany = compressedPlayerData[8];
       player.deadCount = compressedPlayerData[9];
+      player.level = compressedPlayerData[10];
 
       gameObj.playersMap.set(player.playerId, player);
 
@@ -5980,6 +5985,7 @@ socket.on('map data', function (compressed) {
         gameObj.myPlayerObj.isAlive = compressedPlayerData[6];
         gameObj.myPlayerObj.missilesMany = compressedPlayerData[8];
         gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
+        gameObj.myPlayerObj.level = compressedPlayerData[10];
       }
     }
   } catch (err) {
@@ -6051,7 +6057,9 @@ function drawMap(gameObj) {
         gameObj.ctxField.save();
         gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
-        gameObj.ctxField.drawImage(gameObj.enemyImage, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
+        var image = tekiPlayerObj.level !== 1 ? gameObj.leval2Image : gameObj.leval1Image;
+
+        gameObj.ctxField.drawImage(image, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
 
         gameObj.ctxField.restore();
 

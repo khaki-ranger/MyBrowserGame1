@@ -42,9 +42,13 @@ function init() {
   gameObj.playerImage  = new Image();
   gameObj.playerImage.src = '/images/player.png';
 
-  // 敵キャラの画像
-  gameObj.enemyImage = new Image();
-  gameObj.enemyImage.src = '/images/player.png';
+  // 市民の画像
+  gameObj.leval1Image = new Image();
+  gameObj.leval1Image.src = '/images/player.png';
+
+  // ギャングの画像
+  gameObj.leval2Image = new Image();
+  gameObj.leval2Image.src = '/images/level2.png';
 
   // 障害物の画像
   gameObj.obstacleImage = new Image();
@@ -216,6 +220,7 @@ socket.on('map data', (compressed) => {
     player.direction = compressedPlayerData[7];
     player.missilesMany = compressedPlayerData[8];
     player.deadCount = compressedPlayerData[9];
+    player.level = compressedPlayerData[10];
 
     gameObj.playersMap.set(player.playerId, player);
 
@@ -229,6 +234,7 @@ socket.on('map data', (compressed) => {
       gameObj.myPlayerObj.isAlive = compressedPlayerData[6];
       gameObj.myPlayerObj.missilesMany = compressedPlayerData[8];
       gameObj.myPlayerObj.deadCount = compressedPlayerData[9];
+      gameObj.myPlayerObj.level = compressedPlayerData[10];
     }
   }
 
@@ -266,7 +272,7 @@ function drawMap(gameObj) {
       gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
     );
 
-    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+    if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
       if (tekiPlayerObj.isAlive === false) {
         drawBom(gameObj.ctxField, distanceObj.drawX, distanceObj.drawY, tekiPlayerObj.deadCount);
@@ -277,8 +283,10 @@ function drawMap(gameObj) {
       gameObj.ctxField.save();
       gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
+      const image = tekiPlayerObj.level !== 1 ? gameObj.leval2Image : gameObj.leval1Image;
+
       gameObj.ctxField.drawImage(
-        gameObj.enemyImage,
+        image,
         cropPoint.x, cropPoint.y,
         gameObj.enemyCellPx, gameObj.enemyCellPx,
         -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2),
@@ -311,7 +319,7 @@ function drawMap(gameObj) {
       gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
     );
 
-    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+    if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
       gameObj.ctxField.fillStyle = 'rgba(255, 165, 0, 1)';
       gameObj.ctxField.beginPath();
@@ -330,7 +338,7 @@ function drawMap(gameObj) {
       gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight
     );
 
-    if (distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2) && distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2)) {
+    if (distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 && distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2) {
 
       gameObj.ctxField.drawImage(
         gameObj.obstacleImage, distanceObj.drawX - (gameObj.obstacleCellPx / 2), distanceObj.drawY - (gameObj.obstacleCellPx / 2)
@@ -349,8 +357,8 @@ function drawMap(gameObj) {
     );
 
     if (
-      distanceObj.distanceX <= (gameObj.fieldCanvasWidth / 2 + 50) &&
-      distanceObj.distanceY <= (gameObj.fieldCanvasHeight / 2 + 50)
+      distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 + 50 &&
+      distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2 + 50
     ) {
 
       const drawRadius = gameObj.counter % 8 + 1;
@@ -374,46 +382,46 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight, fiel
   if (pX <= oX) {
     // 右から
     distanceX = oX - pX;
-    drawX = (fieldCanvasWidth / 2) + distanceX;
+    drawX = fieldCanvasWidth / 2 + distanceX;
     // 左から
     let tmpDistance = pX + gameWidth - oX;
     if (distanceX > tmpDistance) {
       distanceX = tmpDistance;
-      drawX = (fieldCanvasWidth / 2) - distanceX;
+      drawX = fieldCanvasWidth / 2 - distanceX;
     }
 
   } else {
     // 右から
     distanceX = pX - oX;
-    drawX = (fieldCanvasWidth / 2) - distanceX;
+    drawX = fieldCanvasWidth / 2 - distanceX;
     // 左から
     let tmpDistance = oX + gameWidth - pX;
     if (distanceX > tmpDistance) {
       distanceX = tmpDistance;
-      drawX = (fieldCanvasWidth / 2) + distanceX;
+      drawX = fieldCanvasWidth / 2 + distanceX;
     }
   }
 
   if (pY <= oY) {
     // 下から
     distanceY = oY - pY;
-    drawY = (fieldCanvasHeight / 2) + distanceY;
+    drawY = fieldCanvasHeight / 2 + distanceY;
     // 上から
     let tmpDistance = pY + gameHeight - oY;
     if (distanceY > tmpDistance) {
       distanceY = tmpDistance;
-      drawY = (fieldCanvasHeight / 2) - distanceY;
+      drawY = fieldCanvasHeight / 2 - distanceY;
     }
 
   } else {
     // 上から
     distanceY = pY - oY;
-    drawY = (fieldCanvasHeight / 2) - distanceY;
+    drawY = fieldCanvasHeight / 2 - distanceY;
     // 下から
     let tmpDistance = oY + gameHeight - pY;
     if (distanceY > tmpDistance) {
       distanceY = tmpDistance;
-      drawY = (fieldCanvasHeight / 2) + distanceY;
+      drawY = fieldCanvasHeight / 2 + distanceY;
     }
   }
 

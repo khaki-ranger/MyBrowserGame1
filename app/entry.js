@@ -439,104 +439,6 @@ function calcTwoPointsDegree(x1, y1, x2, y2) {
   return degree;
 }
 
-$(window).on('load', function(){
-  $('#btn-left').click(function(){
-    if (gameObj.myPlayerObj.direction !== 'left') {
-      gameObj.myPlayerObj.direction = 'left';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'left');
-  });
-  $('#btn-up').click(function(){
-    if (gameObj.myPlayerObj.direction !== 'up') {
-      gameObj.myPlayerObj.direction = 'up';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'up');
-  });
-  $('#btn-down').click(function(){
-    if (gameObj.myPlayerObj.direction !== 'down') {
-      gameObj.myPlayerObj.direction = 'down';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'down');
-  });
-  $('#btn-right').click(function(){
-    if (gameObj.myPlayerObj.direction !== 'right') {
-      gameObj.myPlayerObj.direction = 'right';
-      drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-    }
-    sendChangeDirection(socket, 'right');
-  });
-  $('#btn-fire').click(function(){
-    if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
- 
-    gameObj.myPlayerObj.missilesMany -= 1;
-    const missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
-
-    const missileObj = {
-      emitPlayerId: gameObj.myPlayerObj.playerId,
-      x: gameObj.myPlayerObj.x,
-      y: gameObj.myPlayerObj.y,
-      direction: gameObj.myPlayerObj.direction,
-      id: missileId
-    };
-    gameObj.flyingMissilesMap.set(missileId, missileObj);
-    sendMissileEmit(socket, gameObj.myPlayerObj.direction);
-  });
-});
-
-$(window).keydown(function(event) {
-  if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
-
-  switch (event.key) {
-    case 'ArrowLeft':
-      if (gameObj.myPlayerObj.direction !== 'left') {
-        gameObj.myPlayerObj.direction = 'left';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'left');
-      break;
-    case 'ArrowUp':
-      if (gameObj.myPlayerObj.direction !== 'up') {
-        gameObj.myPlayerObj.direction = 'up';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'up');
-      break;
-    case 'ArrowDown':
-      if (gameObj.myPlayerObj.direction !== 'down') {
-        gameObj.myPlayerObj.direction = 'down';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'down');
-      break;
-    case 'ArrowRight':
-      if (gameObj.myPlayerObj.direction !== 'right') {
-        gameObj.myPlayerObj.direction = 'right';
-        drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
-      }
-      sendChangeDirection(socket, 'right');
-      break;
-    case ' ': // スペースキー
-      if (gameObj.myPlayerObj.missilesMany <= 0) break; // ミサイルのストックが 0
- 
-      gameObj.myPlayerObj.missilesMany -= 1;
-      const missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
-
-      const missileObj = {
-        emitPlayerId: gameObj.myPlayerObj.playerId,
-        x: gameObj.myPlayerObj.x,
-        y: gameObj.myPlayerObj.y,
-        direction: gameObj.myPlayerObj.direction,
-        id: missileId
-      };
-      gameObj.flyingMissilesMap.set(missileId, missileObj);
-      sendMissileEmit(socket, gameObj.myPlayerObj.direction);
-      break;
-  }
-});
-
 function sendChangeDirection(socket, direction) {
   socket.emit('change direction', direction);
 }
@@ -582,3 +484,67 @@ function moveFlyingMissileInClient(myPlayerObj, flyingMissilesMap) {
     myPlayerObj.aliveTime.seconds += 1;
   }
 }
+
+function touchDirectionButtonAction(direction) {
+  if (gameObj.myPlayerObj.direction !== direction) {
+    gameObj.myPlayerObj.direction = direction;
+    drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
+  }
+  sendChangeDirection(socket, direction);
+}
+
+function touchEmitButtonAction() {
+  if (gameObj.myPlayerObj.missilesMany <= 0) return; // ミサイルのストックが 0
+ 
+  gameObj.myPlayerObj.missilesMany -= 1;
+  const missileId = Math.floor(Math.random() * 100000) + ',' + gameObj.myPlayerObj.socketId + ',' + gameObj.myPlayerObj.x + ',' + gameObj.myPlayerObj.y;
+
+  const missileObj = {
+    emitPlayerId: gameObj.myPlayerObj.playerId,
+    x: gameObj.myPlayerObj.x,
+    y: gameObj.myPlayerObj.y,
+    direction: gameObj.myPlayerObj.direction,
+    id: missileId
+  };
+  gameObj.flyingMissilesMap.set(missileId, missileObj);
+  sendMissileEmit(socket, gameObj.myPlayerObj.direction);
+}
+
+$(window).on('load', function(){
+  $('#btn-left').click(function(){
+    touchDirectionButtonAction('left');
+  });
+  $('#btn-up').click(function(){
+    touchDirectionButtonAction('up');
+  });
+  $('#btn-down').click(function(){
+    touchDirectionButtonAction('down');
+  });
+  $('#btn-right').click(function(){
+    touchDirectionButtonAction('right');
+  });
+  $('#btn-fire').click(function(){
+    touchEmitButtonAction();
+  });
+  $(window).keydown(function(event) {
+    if (!gameObj.myPlayerObj || gameObj.myPlayerObj.isAlive === false) return;
+  
+    switch (event.key) {
+      case 'ArrowLeft':
+        touchDirectionButtonAction('left');
+        break;
+      case 'ArrowUp':
+        touchDirectionButtonAction('up');
+        break;
+      case 'ArrowDown':
+        touchDirectionButtonAction('down');
+        break;
+      case 'ArrowRight':
+        touchDirectionButtonAction('right');
+        break;
+      case ' ': // スペースキー
+        touchEmitButtonAction();
+        break;
+    }
+  });
+});

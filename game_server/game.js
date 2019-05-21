@@ -415,8 +415,8 @@ function addCOM() {
         aliveTime: { 'clock': 0, 'seconds': 0 },
         killCount: 0,
         level: level,
-        displayName: 'COM',
-        thumbUrl: 'COM',
+        displayName: 'Lv' + level,
+        thumbUrl: 'images/anonymouse.jpg',
         playerId: id
       };
       gameObj.COMMap.set(id, playerObj);

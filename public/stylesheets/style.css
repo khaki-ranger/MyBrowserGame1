@@ -245,6 +245,8 @@ button.ui-component {
 }
 .game canvas#field {
   background-color: green;
+  width: 360px;
+  height: 360px;
 }
 .status .holder>div>span,
 .game .ranking table td.rank,

@@ -362,36 +362,34 @@ function disconnect(socketId) {
   gameObj.playersMap.delete(socketId);
 }
 
-function addItem() {
-  const itemX = Math.floor(Math.random() * gameObj.fieldWidth);
-  const itemY = Math.floor(Math.random() * gameObj.fieldHeight);
-  const itemKey = `${itemX},${itemY}`;
+function setElementsPosition() {
+  const elementX = Math.floor(Math.random() * gameObj.fieldWidth);
+  const elementY = Math.floor(Math.random() * gameObj.fieldHeight);
+  const elementKey = `${elementX},${elementY}`;
 
-  if (gameObj.itemsMap.has(itemKey)) { // アイテムの位置が被ってしまった場合は
-    return addItem(); // 場所が重複した場合は作り直し
+  if (gameObj.obstacleMap.has(elementKey) || gameObj.itemsMap.has(elementKey)) {
+    return setElementsPosition(); // 場所が重複した場合は作り直し
   }
-
-  const itemObj = {
-    x: itemX,
-    y: itemY,
+  
+  const elementObj = {
+    x: elementX,
+    y: elementY,
   };
-  gameObj.itemsMap.set(itemKey, itemObj);
+  const returnObj = {
+    elementKey: elementKey,
+    elementObj: elementObj
+  };
+  return returnObj;
+}
+
+function addItem() {
+  const element = setElementsPosition();
+  gameObj.itemsMap.set(element.elementKey, element.elementObj);
 }
 
 function addObstacle() {
-  const obstacleX = Math.floor(Math.random() * gameObj.fieldWidth);
-  const obstacleY = Math.floor(Math.random() * gameObj.fieldHeight);
-  const obstacleKey = `${obstacleX},${obstacleY}`;
-
-  if (gameObj.obstacleMap.has(obstacleKey)) { // アイテムの位置が被ってしまった場合は
-    return addObstacle(); // 場所が重複した場合は作り直し
-  }
-
-  const obstacleObj = {
-    x: obstacleX,
-    y: obstacleY,
-  };
-  gameObj.obstacleMap.set(obstacleKey, obstacleObj);
+  const element = setElementsPosition();
+  gameObj.obstacleMap.set(element.elementKey, element.elementObj);
 }
 
 function addCOM() {
@@ -436,7 +434,6 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceX > tmpDistance) {
       distanceX = tmpDistance;
     }
-
   } else {
     // 右から
     distanceX = pX - oX;
@@ -455,7 +452,6 @@ function calculationBetweenTwoPoints(pX, pY, oX, oY, gameWidth, gameHeight) {
     if (distanceY > tmpDistance) {
       distanceY = tmpDistance;
     }
-
   } else {
     // 上から
     distanceY = pY - oY;

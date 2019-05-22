@@ -59,8 +59,8 @@ function init() {
   gameObj.missileImage.src = '/images/missile.png';
 
   // 爆発の画像集
-  gameObj.bomListImage = new Image();
-  gameObj.bomListImage.src = '/images/bomlist.png';
+  gameObj.bomEfectImage = new Image();
+  gameObj.bomEfectImage.src = '/images/bomefect.png';
 }
 init();
 
@@ -128,11 +128,11 @@ function drawBom(ctxField, drawX, drawY, deadCount) {
   if (deadCount >= 60) return;
 
   const drawBomNumber = Math.floor(deadCount / 6);
-  const cropX = (drawBomNumber % (gameObj.bomListImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
-  const cropY = Math.floor(drawBomNumber / (gameObj.bomListImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
+  const cropX = (drawBomNumber % (gameObj.bomEfectImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
+  const cropY = Math.floor(drawBomNumber / (gameObj.bomEfectImage.width / gameObj.bomCellPx)) * gameObj.bomCellPx;
 
   ctxField.drawImage(
-    gameObj.bomListImage,
+    gameObj.bomEfectImage,
     cropX, cropY,
     gameObj.bomCellPx, gameObj.bomCellPx,
     drawX - gameObj.bomCellPx / 2, drawY - gameObj.bomCellPx / 2,

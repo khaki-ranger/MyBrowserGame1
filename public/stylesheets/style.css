@@ -267,7 +267,6 @@ button.ui-component {
   vertical-align: middle;
 }
 .controller .direction {
-  width: 120px;
   text-align: left;
 }
 .controller .direction .holder {
@@ -282,11 +281,11 @@ button.ui-component {
   padding: 0;
   box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
   border-radius: 50%;
-  width: 31px;
-  height: 31px;
+  width: 47px;
+  height: 47px;
 }
 .controller .direction .btn i {
-  font-size: 32px;
+  font-size: 48px;
   color: #666;
 }
 .controller .button {
@@ -297,15 +296,20 @@ button.ui-component {
   box-shadow: 1px 2px 2px 0px rgba(0, 0, 0, 0.3);
   display: block;
   border: none;
-  border-radius: 18px;
   background-color: #666;
   color: white;
-  height: 32px;
+  height: 44px;
+  border-radius: 22px;
+  line-height: 20px;
 }
 .controller .reset {
   padding: 0 20px;
   text-align: center;
   font-weight: bold;
+}
+.controller .reset a {
+  width: 44px;
+  font-size: 24px;
 }
 .controller .button {
   text-align: right;
@@ -314,10 +318,10 @@ button.ui-component {
   width: 100%;
 }
 .controller .button button i {
-  font-size: 30px;
+  font-size: 40px;
 }
 .controller .direction .holder .upanddown  #btn-up {
-  margin-bottom: 14px;
+  margin-bottom: 24px;
 }
 /* status */
 .status {

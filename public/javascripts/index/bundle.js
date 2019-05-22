@@ -5928,7 +5928,9 @@ function drawRanking(playersMap) {
     if (!playersArray[i]) continue;
     var rank = i + 1;
     var time = toHms(playersArray[i][1].aliveTimeSeconds);
-    rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + playersArray[i][1].displayName + '</td><td class="time">' + time + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';
+    var name = playersArray[i][1].displayName.substring(0, 4);
+    name = playersArray[i][1].displayName.length <= 4 ? name : name + '…';
+    rankingTable += '<tr><td class="rank">' + rank + '</td><td class="name">' + name + '</td><td class="time">' + time + '</td><td class="kill">' + playersArray[i][1].killCount + '</td></tr>';
   }
   (0, _jquery2.default)('#ranking-table').html(rankingTable);
 }

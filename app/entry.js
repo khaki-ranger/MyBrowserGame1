@@ -184,7 +184,9 @@ function drawRanking(playersMap) {
     if (!playersArray[i]) continue;
     const rank = i + 1;
     const time = toHms(playersArray[i][1].aliveTimeSeconds);
-    rankingTable += `<tr><td class="rank">${rank}</td><td class="name">${playersArray[i][1].displayName}</td><td class="time">${time}</td><td class="kill">${playersArray[i][1].killCount}</td></tr>`;
+    let name = playersArray[i][1].displayName.substring(0, 4);
+    name = playersArray[i][1].displayName.length <= 4 ? name : name + '…';
+    rankingTable += `<tr><td class="rank">${rank}</td><td class="name">${name}</td><td class="time">${time}</td><td class="kill">${playersArray[i][1].killCount}</td></tr>`;
   }
   $('#ranking-table').html(rankingTable);
 }

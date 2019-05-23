@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
   res.render('index', {
-    title: 'ゲームつくるセンター葉山',
+    title: 'ゲームのタイトル',
     user: req.user
   });
 });

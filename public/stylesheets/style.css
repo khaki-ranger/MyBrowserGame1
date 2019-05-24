@@ -459,3 +459,19 @@ button.ui-component {
 .gameover table .bottom td a {
   background-color: rgba(255, 255, 255, .5);
 }
+/* footer */
+footer {
+  background-color: black;
+  color: white;
+  padding: 2rem 0;
+}
+footer .fb-plugin {
+  text-align: right;
+}
+footer .copyright {
+  text-align: center;
+  line-height: 28px;
+}
+footer .copyright a i:before {
+  padding-right: .25rem;
+}

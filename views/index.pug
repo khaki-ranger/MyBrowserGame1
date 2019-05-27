@@ -3,10 +3,8 @@ extends layout
 block content
   section.key-visual
     .title-box
-      p ここの背景に、いい感じのキービジュアルが入る
       h1 #{title}
     .control-panel
-      h2 オリジナルゲーム開発中！
       if user
         .start
           h3 スタート
@@ -27,7 +25,16 @@ block content
             span OR
           .ui-block
             a.ui-component.btn-start(href='game') 匿名でゲームに参加！
-  section.description
+  section.about.this-game
+    .container
+      h1 このゲームについて
+      .body 日本国民は、正当に選挙された国会における代表者を通じて行動し、われらとわれらの子孫のために、諸国民との協和による成果と、わが国全土にわたつて自由のもたらす恵沢を確保し、政府の行為によつて再び戦争の惨禍が起ることのないやうにすることを決意し、ここに主権が国民に存することを宣言し、この憲法を確定する。そもそも国政は、国民の厳粛な信託によるものであつて、その権威は国民に由来し、その権力は国民の代表者がこれを行使し、その福利は国民がこれを享受する。
+  section.about.gtch
     .container
       h1 ゲームつくるセンター葉山とは
       .body 日本国民は、正当に選挙された国会における代表者を通じて行動し、われらとわれらの子孫のために、諸国民との協和による成果と、わが国全土にわたつて自由のもたらす恵沢を確保し、政府の行為によつて再び戦争の惨禍が起ることのないやうにすることを決意し、ここに主権が国民に存することを宣言し、この憲法を確定する。そもそも国政は、国民の厳粛な信託によるものであつて、その権威は国民に由来し、その権力は国民の代表者がこれを行使し、その福利は国民がこれを享受する。
+  footer
+    .container.clearfix
+      .copyright.fl-left
+        a(href="https://github.com/khaki-ranger", target="_blank")
+          i(class='fas fa-copyright') khaki-ranger

@@ -106,19 +106,19 @@ button.ui-component {
   border-radius: 3px;
 }
 /* key-visual */
-.key-visual {
-  background-color: #666;
-  margin-bottom: 2rem;
-}
 .key-visual .title-box {
-  color: white;
+  background-image: url(/images/background.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: red;
 }
 .key-visual h1 {
   font-size: 2rem;
 }
 /* control-panel */
 .control-panel {
-  background-color: white;
+  background-color: rgba(255, 255, 255, .9);
 }
 .control-panel>div {
   padding: 0 1rem 1rem 1rem;
@@ -218,7 +218,6 @@ button.ui-component {
 }
 .middle-head-component span {
   padding: .5rem;
-  background-color: white;
   font-size: 1rem;
   font-weight: bold;
 }
@@ -229,13 +228,21 @@ button.ui-component {
   background: #ccc;
   display: block;
 }
-/* description */
-.description h1 {
+/* about */
+.about {
+  padding: 2rem 0 1rem 0;
+}
+.about h1 {
   text-align: center;
   margin-bottom: 1rem;
 }
-.description .body {
+.about .body {
   margin-bottom: 1rem;
+}
+/* this-game */
+/* gtch */
+.gtch {
+  background-color: yellow;
 }
 /* game */
 .game {
@@ -451,4 +458,20 @@ button.ui-component {
 }
 .gameover table .bottom td a {
   background-color: rgba(255, 255, 255, .5);
+}
+/* footer */
+footer {
+  background-color: black;
+  color: white;
+  padding: 2rem 0;
+}
+footer .fb-plugin {
+  text-align: right;
+}
+footer .copyright {
+  text-align: center;
+  line-height: 28px;
+}
+footer .copyright a i:before {
+  padding-right: .25rem;
 }

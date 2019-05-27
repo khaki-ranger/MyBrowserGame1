@@ -44,7 +44,7 @@ function init() {
 
   // 市民の画像
   gameObj.leval1Image = new Image();
-  gameObj.leval1Image.src = '/images/player.png';
+  gameObj.leval1Image.src = '/images/level1.png';
 
   // ギャングの画像
   gameObj.leval2Image = new Image();

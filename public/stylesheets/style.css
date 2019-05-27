@@ -178,13 +178,21 @@ button.ui-component {
 }
 }
 /* login */
-.login .twitter-login {
-  background-color: #1da1f2;
-  border: 1px solid #1da1f2;
+.login .twitter-login,
+.login .facebook-login {
   position: relative;
   color: white;
 }
-.login .twitter-login:before {
+.login .twitter-login {
+  background-color: #1da1f2;
+  border: 1px solid #1da1f2;
+}
+.login .facebook-login {
+  background-color: #4267b2;
+  border: 1px solid #29487d;
+}
+.login .twitter-login:before,
+.login .facebook-login:before {
   font-family: "Font Awesome 5 Brands";
   font-size: 1.25rem;
   position: absolute;
@@ -196,6 +204,9 @@ button.ui-component {
 }
 .login .twitter-login:before {
   content: '\f099';
+}
+.login .facebook-login:before {
+  content: '\f39e';
 }
 /* btn-start */
 .btn-start {

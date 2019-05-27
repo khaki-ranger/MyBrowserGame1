@@ -19,6 +19,7 @@ const FACEBOOK_CALLBACK_URL = process.env.FACEBOOK_CALLBACK_URL;
 
 var indexRouter = require('./routes/index');
 var gameRouter = require('./routes/game');
+var privacyRouter = require('./routes/privacy');
 
 passport.use(new TwitterStrategy({
     consumerKey: TWITTER_CONSUMER_KEY ,
@@ -72,6 +73,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
+app.use('/privacy', privacyRouter);
 
 app.get('/login/twitter',
   passport.authenticate('twitter')

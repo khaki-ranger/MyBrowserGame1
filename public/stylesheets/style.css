@@ -325,6 +325,21 @@ button.ui-component {
   font-size: 48px;
   color: #666;
 }
+.controller .direction .btn .fa-chevron-circle-down {
+  color: yellowgreen;
+}
+.controller .direction .btn .fa-chevron-circle-up {
+  color: blue;
+}
+.controller .direction .btn .fa-chevron-circle-left {
+  color: green;
+}
+.controller .direction .btn .fa-chevron-circle-right {
+  color: red;
+}
+.controller .button #btn-fire {
+  background-color: red;
+}
 .controller .button {
   width: 36%;
 }

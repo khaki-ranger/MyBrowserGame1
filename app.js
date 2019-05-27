@@ -6,22 +6,40 @@ var logger = require('morgan');
 var helmet = require('helmet');
 var session = require('express-session');
 var passport = require('passport');
-var Strategy = require('passport-twitter').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 
 require('dotenv').config();
 const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY;
 const TWITTER_SECRET = process.env.TWITTER_SECRET;
 const TWITTER_CALLBACK_URL = process.env.TWITTER_CALLBACK_URL;
+const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
+const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
+const FACEBOOK_CALLBACK_URL = process.env.FACEBOOK_CALLBACK_URL;
 
 var indexRouter = require('./routes/index');
 var gameRouter = require('./routes/game');
+var privacyRouter = require('./routes/privacy');
 
-passport.use(new Strategy({
+passport.use(new TwitterStrategy({
     consumerKey: TWITTER_CONSUMER_KEY ,
     consumerSecret: TWITTER_SECRET,
     callbackURL: TWITTER_CALLBACK_URL
   },
   function(token, tokenSecret, profile, cb) {
+    process.nextTick(function () {
+      return cb(null, profile);
+    });
+  })
+);
+
+passport.use(new FacebookStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET,
+    callbackURL: FACEBOOK_CALLBACK_URL,
+    profileFields: ['id', 'displayName', 'photos']
+  },
+  function (accessToken, refreshToken, profile, cb) {
     process.nextTick(function () {
       return cb(null, profile);
     });
@@ -55,6 +73,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/game', gameRouter);
+app.use('/privacy', privacyRouter);
 
 app.get('/login/twitter',
   passport.authenticate('twitter')
@@ -63,6 +82,17 @@ app.get('/login/twitter',
 app.get('/oauth_callback',
   passport.authenticate('twitter', { failureRedirect: '/' }),
   function(req, res) {
+    res.redirect('/');
+  }
+);
+
+app.get('/login/facebook',
+  passport.authenticate('facebook')
+);
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/' }),
+  function (req, res) {
     res.redirect('/');
   }
 );

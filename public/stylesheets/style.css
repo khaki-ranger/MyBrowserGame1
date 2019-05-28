@@ -276,14 +276,11 @@ button.ui-component {
 }
 /* game */
 .game {
-  width: 360px;
   margin: 0 auto;
   position: relative;
 }
 .game canvas#field {
   background-color: green;
-  width: 360px;
-  height: 360px;
 }
 .status .holder>div>span,
 .game .ranking table td.rank,
@@ -291,13 +288,32 @@ button.ui-component {
 .game .ranking table td.time {
   font-family: "Courier New", Consolas, monospace;
 }
+@media (max-width: 768px) {
+.game {
+  width: 360px;
+}
+.game canvas#field {
+  width: 360px;
+  height: 360px;
+}
+}
+@media (min-width: 768px) {
+.game {
+  width: 720px;
+}
+.game canvas#field {
+  width: 720px;
+  height: 500px;
+}
+}
 /* controller */
 .controller {
   margin-top: 10px;
 }
 .controller .holder {
   display: table;
-  width: 100%;
+  width: 360px;
+  margin: 0 auto;
 }
 .controller .holder>div {
   display: table-cell;
@@ -378,10 +394,19 @@ button.ui-component {
 /* status */
 .status {
   background-color: black;
-  width: 360px;
   margin: 0 auto;
   color: white;
   padding: 8px 0;
+}
+@media (max-width: 768px) {
+.status {
+  width: 360px;
+}
+}
+@media (min-width: 768px) {
+.status {
+  width: 720px;
+}
 }
 .status .holder {
   display: table;
@@ -467,11 +492,20 @@ button.ui-component {
   opacity: 0;
   position: absolute;
   top: 0;
-  height: 360px;
   left: 0;
   right: 0;
   width: 320px;
   margin: 0 auto;
+}
+@media (max-width: 768px) {
+.gameover {
+  height: 360px;
+}
+}
+@media (min-width: 768px) {
+.gameover {
+  height: 500px;
+}
 }
 .gameover.visible {
   opacity: 1;

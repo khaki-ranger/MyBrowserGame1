@@ -5789,11 +5789,7 @@ var socketQueryParameters = 'displayName=' + gameObj.myDisplayName + '&thumbUrl=
 var socket = (0, _socket2.default)((0, _jquery2.default)('#main').attr('data-ipAddress') + '?' + socketQueryParameters);
 
 function init() {
-  // ゲーム用のキャンバス
-  var fieldCanvas = (0, _jquery2.default)('#field')[0];
-  fieldCanvas.width = gameObj.fieldCanvasWidth;
-  fieldCanvas.height = gameObj.fieldCanvasHeight;
-  gameObj.ctxField = fieldCanvas.getContext('2d');
+  setFieldCanvasSize();
 
   // プレイヤーの画像
   gameObj.playerImage = new Image();
@@ -6381,6 +6377,23 @@ function touchEmitButtonAction() {
   sendMissileEmit(socket, gameObj.myPlayerObj.direction);
 }
 
+function setFieldCanvasSize() {
+  var windowWidth = (0, _jquery2.default)(window).width();
+  if (windowWidth >= 768) {
+    gameObj.fieldCanvasWidth = 720;
+    gameObj.fieldCanvasHeight = 500;
+  } else {
+    gameObj.fieldCanvasWidth = 360;
+    gameObj.fieldCanvasHeight = 360;
+  }
+
+  // ゲーム用のキャンバス
+  var fieldCanvas = (0, _jquery2.default)('#field')[0];
+  fieldCanvas.width = gameObj.fieldCanvasWidth;
+  fieldCanvas.height = gameObj.fieldCanvasHeight;
+  gameObj.ctxField = fieldCanvas.getContext('2d');
+}
+
 (0, _jquery2.default)(window).on('load', function () {
   (0, _jquery2.default)('#btn-left').click(function () {
     touchDirectionButtonAction('left');
@@ -6418,6 +6431,9 @@ function touchEmitButtonAction() {
         touchEmitButtonAction();
         break;
     }
+  });
+  (0, _jquery2.default)(window).on('resize', function () {
+    setFieldCanvasSize();
   });
 });
 

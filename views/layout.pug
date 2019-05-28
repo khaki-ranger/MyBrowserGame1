@@ -5,14 +5,22 @@ html
     meta(http-equiv="X-UA-Compatible" content="IE=edge7")
     meta(name="viewport" content="width=device-width, initial-scale=1")
     title= title
+    meta(property='og:type', content='website')
+    meta(property='og:url', content=`${configVars.heroku.url}`)
+    meta(property='og:title', content=`${title}`)
+    meta(property='og:image', content=`${configVars.heroku.url}/images/ogp.jpg`)
+    meta(property='og:locale', content='ja_JP')
+    meta(property='og:site_name', content='ゲームつくるセンター葉山のゲーム')
+    meta(property='og:description', content='ゲームつくるセンター葉山でつくったゲームです。')
+    meta(property='fb:app_id', content=`${configVars.facebook.app_id}`)
     link(rel='stylesheet', href='/stylesheets/style.css', type="text/css")
     link(rel='stylesheet', href='https://use.fontawesome.com/releases/v5.6.1/css/all.css', type="text/css")
-    script(async src="https://www.googletagmanager.com/gtag/js?id=UA-140910204-1")
+    script(async src=`https://www.googletagmanager.com/gtag/js?id=${configVars.google.ga_id}`)
     script.
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
     
-      gtag('config', 'UA-140910204-1');
+      gtag('config', '#{configVars.google.ga_id}');
   body
     block content

@@ -526,8 +526,6 @@ function setFieldCanvasSize() {
     gameObj.fieldCanvasHeight = 360;
   }
 
-  console.log(changeFlag);
-
   if (changeFlag) {
     // ゲーム用のキャンバス
     const fieldCanvas = $('#field')[0];

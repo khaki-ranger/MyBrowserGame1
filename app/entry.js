@@ -513,20 +513,28 @@ function touchEmitButtonAction() {
 }
 
 function setFieldCanvasSize() {
+  let changeFlag = false;
+
   const windowWidth = $(window).width();
   if (windowWidth >= 768) {
+    changeFlag = gameObj.fieldCanvasWidth === 360 ? true : false;
     gameObj.fieldCanvasWidth = 720;
     gameObj.fieldCanvasHeight = 500;
   } else {
+    changeFlag = gameObj.fieldCanvasWidth === 720 ? true : false;
     gameObj.fieldCanvasWidth = 360;
     gameObj.fieldCanvasHeight = 360;
   }
 
-  // ゲーム用のキャンバス
-  const fieldCanvas = $('#field')[0];
-  fieldCanvas.width = gameObj.fieldCanvasWidth;
-  fieldCanvas.height = gameObj.fieldCanvasHeight;
-  gameObj.ctxField = fieldCanvas.getContext('2d');
+  console.log(changeFlag);
+
+  if (changeFlag) {
+    // ゲーム用のキャンバス
+    const fieldCanvas = $('#field')[0];
+    fieldCanvas.width = gameObj.fieldCanvasWidth;
+    fieldCanvas.height = gameObj.fieldCanvasHeight;
+    gameObj.ctxField = fieldCanvas.getContext('2d');
+  }
 }
 
 $(window).on('load', function(){

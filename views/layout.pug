@@ -26,12 +26,5 @@ html
       gtag('config', '#{configVars.google.ga_id}');
   body
     div(id="fb-root")
-      script.
-        (function(d, s, id) {
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) return;
-          js = d.createElement(s); js.id = id;
-          js.src = 'https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v3.2&appId=#{configVars.facebook.app_id}&autoLogAppEvents=1';
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+    script(async defer crossorigin="anonymous" src="https://connect.facebook.net/ja_JP/sdk.js#xfbml=1&version=v3.3&appId=#{configVars.facebook.app_id}&autoLogAppEvents=1")
     block content

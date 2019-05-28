@@ -15,8 +15,6 @@ const gameObj = {
   directions: ['left', 'up', 'down', 'right'],
   fieldWidth: 1000,
   fieldHeight: 1000,
-  fieldCanvasWidth: 500, 
-  fieldCanvasHeight: 500, 
   itemTotal: 30,
   obstacleTotal: 15,
   movingDistance: 10,
@@ -51,13 +49,13 @@ function checkInSameline(COMObj) {
       COMObj.x, COMObj.y, playerObj.x, playerObj.y, gameObj.fieldWidth, gameObj.fieldHeight
     )
     if (
-      distanceObj.distanceX <= gameObj.fieldCanvasWidth / 2 &&
+      distanceObj.distanceX <= gameObj.fieldWidth / 4 &&
       distanceObj.distanceY <= gameObj.missileHeight / 2
     ) {
       return distanceObj.directionX;
       break;
     } else if (
-      distanceObj.distanceY <= gameObj.fieldCanvasHeight / 2 &&
+      distanceObj.distanceY <= gameObj.fieldHeight / 4 &&
       distanceObj.distanceX <= gameObj.missileWidth / 2
     ) {
       return distanceObj.directionY;

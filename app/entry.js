@@ -63,6 +63,7 @@ init();
 
 function gameTicker() {
   if (!gameObj.myPlayerObj || !gameObj.playersMap) return;
+
   // フィールドの画面を初期化する
   gameObj.ctxField.clearRect(0, 0, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
@@ -513,7 +514,7 @@ function touchEmitButtonAction() {
 }
 
 function setFieldCanvasSize() {
-  let changeFlag = false;
+  let changeFlag = true;
 
   const windowWidth = $(window).width();
   if (windowWidth >= 768) {
@@ -526,13 +527,11 @@ function setFieldCanvasSize() {
     gameObj.fieldCanvasHeight = 360;
   }
 
-  if (changeFlag) {
     // ゲーム用のキャンバス
     const fieldCanvas = $('#field')[0];
     fieldCanvas.width = gameObj.fieldCanvasWidth;
     fieldCanvas.height = gameObj.fieldCanvasHeight;
     gameObj.ctxField = fieldCanvas.getContext('2d');
-  }
 }
 
 $(window).on('load', function(){

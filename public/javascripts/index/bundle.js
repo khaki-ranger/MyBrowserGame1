@@ -5803,6 +5803,10 @@ function init() {
   gameObj.leval2Image = new Image();
   gameObj.leval2Image.src = '/images/level2.png';
 
+  // ピエロの画像
+  gameObj.leval3Image = new Image();
+  gameObj.leval3Image.src = '/images/player.png';
+
   // 障害物の画像
   gameObj.obstacleImage = new Image();
   gameObj.obstacleImage.src = '/images/obstacle.png';
@@ -6056,7 +6060,14 @@ function drawMap(gameObj) {
         gameObj.ctxField.save();
         gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
-        var image = tekiPlayerObj.level !== 1 ? gameObj.leval2Image : gameObj.leval1Image;
+        var image = '';
+        if (tekiPlayerObj.level === 1) {
+          image = gameObj.leval1Image;
+        } else if (tekiPlayerObj.level === 2) {
+          image = gameObj.leval2Image;
+        } else {
+          image = gameObj.leval3Image;
+        }
 
         gameObj.ctxField.drawImage(image, cropPoint.x, cropPoint.y, gameObj.enemyCellPx, gameObj.enemyCellPx, -(gameObj.enemyCellPx / 2), -(gameObj.enemyCellPx / 2), gameObj.enemyCellPx, gameObj.enemyCellPx); // 画像データ、切り抜き左、切り抜き上、幅、幅、表示x、表示y、幅、幅
 

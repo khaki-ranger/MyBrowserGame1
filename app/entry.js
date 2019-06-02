@@ -33,7 +33,6 @@ const socket = io($('#main').attr('data-ipAddress') + '?' + socketQueryParameter
 
 function init() {
   setFieldCanvasSize();
-
   
   // プレイヤーの画像
   gameObj.playerImage  = new Image();
@@ -46,6 +45,10 @@ function init() {
   // ギャングの画像
   gameObj.leval2Image = new Image();
   gameObj.leval2Image.src = '/images/level2.png';
+
+  // ピエロの画像
+  gameObj.leval3Image  = new Image();
+  gameObj.leval3Image.src = '/images/player.png';
 
   // 障害物の画像
   gameObj.obstacleImage = new Image();
@@ -283,7 +286,14 @@ function drawMap(gameObj) {
       gameObj.ctxField.save();
       gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
-      const image = tekiPlayerObj.level !== 1 ? gameObj.leval2Image : gameObj.leval1Image;
+      let image = '';
+      if (tekiPlayerObj.level === 1) {
+        image = gameObj.leval1Image;
+      } else if (tekiPlayerObj.level === 2) {
+        image = gameObj.leval2Image;
+      } else {
+        image = gameObj.leval3Image;
+      }
 
       gameObj.ctxField.drawImage(
         image,

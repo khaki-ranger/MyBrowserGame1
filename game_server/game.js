@@ -93,6 +93,17 @@ function COMMoveDecision(COMMap) {
         }
         break;
       case 3:
+        if (Math.floor(Math.random() * 5) === 1) {
+          movePlayer(COMObj);
+        }
+        if (Math.floor(Math.random() * 30) === 1) {
+          COMObj.direction = gameObj.directions[Math.floor(Math.random() * gameObj.directions.length)];
+        }
+        if (COMObj.missilesMany > 0 && checkInSameline(COMObj)) {
+          COMObj.direction = checkInSameline(COMObj)
+          missileEmit(COMObj.playerId, COMObj.direction);
+        }
+        break;
     }
   }
 }
@@ -421,8 +432,18 @@ function addCOM() {
       const playerX = Math.floor(Math.random() * gameObj.fieldWidth);
       const playerY = Math.floor(Math.random() * gameObj.fieldHeight);
       const rnd = Math.floor(Math.random() * 10);
-      const level = rnd >= 7 ? 2 : 1;
-      const displayName = level === 1 ? '市民' : 'ギャング';
+      let displayName = '市民';
+      let level = 1;
+      if (rnd <= 4) {
+        level = 1;
+        displayName = '市民';
+      } else if (rnd <= 7) {
+        level = 2;
+        displayName = 'ギャング';
+      } else {
+        level = 3;
+        displayName = 'ピエロ';
+      }
       const id = Math.floor(Math.random() * 100000) + ',' + playerX + ',' + playerY + ',' + level;
       const playerObj = {
         x: playerX,

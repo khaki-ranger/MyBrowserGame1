@@ -6390,15 +6390,11 @@ function touchEmitButtonAction() {
 }
 
 function setFieldCanvasSize() {
-  var changeFlag = true;
-
   var windowWidth = (0, _jquery2.default)(window).width();
   if (windowWidth >= 768) {
-    changeFlag = gameObj.fieldCanvasWidth === 360 ? true : false;
     gameObj.fieldCanvasWidth = 720;
     gameObj.fieldCanvasHeight = 500;
   } else {
-    changeFlag = gameObj.fieldCanvasWidth === 720 ? true : false;
     gameObj.fieldCanvasWidth = 360;
     gameObj.fieldCanvasHeight = 360;
   }

@@ -290,7 +290,8 @@ function newConnection(socketId, displayName, thumbUrl) {
     killCount: 0,
     level: 1
   };
-  gameObj.playersMap.set(socketId, playerObj);
+  //gameObj.playersMap.set(socketId, playerObj);
+  gameObj.COMMap.set(socketId, playerObj);
 
   const startObj = {
     playerObj: playerObj,

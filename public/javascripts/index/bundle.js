@@ -5831,10 +5831,12 @@ function gameTicker() {
   drawMap(gameObj);
 
   // プレイヤーを描画する
+  /*
   drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
   if (gameObj.myPlayerObj.isAlive === false && gameObj.myPlayerObj.deadCount > 60) {
     drawGameOver(gameObj.ctxField);
   }
+  */
 
   // 残弾の描画
   drawMissiles(gameObj.myPlayerObj.missilesMany);
@@ -6043,9 +6045,7 @@ function drawMap(gameObj) {
       var key = _ref2[0];
       var tekiPlayerObj = _ref2[1];
 
-      if (key === gameObj.myPlayerObj.playerId) {
-        continue;
-      } // 自分は描画しない
+      //if (key === gameObj.myPlayerObj.playerId) { continue; } // 自分は描画しない
 
       var distanceObj = calculationBetweenTwoPoints(gameObj.myPlayerObj.x, gameObj.myPlayerObj.y, tekiPlayerObj.x, tekiPlayerObj.y, gameObj.fieldWidth, gameObj.fieldHeight, gameObj.fieldCanvasWidth, gameObj.fieldCanvasHeight);
 
@@ -6061,7 +6061,9 @@ function drawMap(gameObj) {
         gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
         var image = '';
-        if (tekiPlayerObj.level === 1) {
+        if (key === gameObj.myPlayerObj.playerId) {
+          image = gameObj.playerImage;
+        } else if (tekiPlayerObj.level === 1) {
           image = gameObj.leval1Image;
         } else if (tekiPlayerObj.level === 2) {
           image = gameObj.leval2Image;

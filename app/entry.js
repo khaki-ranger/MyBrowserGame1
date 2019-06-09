@@ -74,10 +74,12 @@ function gameTicker() {
   drawMap(gameObj);
 
   // プレイヤーを描画する
+  /*
   drawPlayer(gameObj.ctxField, gameObj.myPlayerObj);
   if (gameObj.myPlayerObj.isAlive === false && gameObj.myPlayerObj.deadCount > 60) {
     drawGameOver(gameObj.ctxField);
   }
+  */
 
   // 残弾の描画
   drawMissiles(gameObj.myPlayerObj.missilesMany);
@@ -266,7 +268,7 @@ function drawMap(gameObj) {
 
   // 敵プレイヤーと COM の描画
   for (let [key, tekiPlayerObj] of gameObj.playersMap) {
-    if (key === gameObj.myPlayerObj.playerId) { continue; } // 自分は描画しない
+    //if (key === gameObj.myPlayerObj.playerId) { continue; } // 自分は描画しない
 
     const distanceObj = calculationBetweenTwoPoints(
       gameObj.myPlayerObj.x, gameObj.myPlayerObj.y,
@@ -287,7 +289,9 @@ function drawMap(gameObj) {
       gameObj.ctxField.translate(distanceObj.drawX, distanceObj.drawY);
 
       let image = '';
-      if (tekiPlayerObj.level === 1) {
+      if (key === gameObj.myPlayerObj.playerId) {
+        image = gameObj.playerImage;
+      } else if (tekiPlayerObj.level === 1) {
         image = gameObj.leval1Image;
       } else if (tekiPlayerObj.level === 2) {
         image = gameObj.leval2Image;
